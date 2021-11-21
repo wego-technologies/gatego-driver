@@ -1,5 +1,5 @@
-import 'dart:convert';
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -14,14 +14,39 @@ import 'yardProvider.dart';*/
 
 import '../utils/debug_mode.dart';
 
-class Auth with ChangeNotifier {
-  Auth(this.ref) : super();
+class AuthState {
+  String? token;
+  DateTime? expiryDate;
+  String? userId;
+  Timer? authTimer;
+  Timer? refreshTimer;
 
-  String? _token;
-  DateTime? _expiryDate;
-  String? _userId;
-  Timer? _authTimer;
-  Timer? _refreshTimer;
+  AuthState(
+      {this.authTimer,
+      this.expiryDate,
+      this.refreshTimer,
+      this.token,
+      this.userId});
+
+  AuthState copyWith({
+    String? token,
+    DateTime? expiryDate,
+    String? userId,
+    Timer? authTimer,
+    Timer? refreshTimer,
+  }) {
+    return AuthState(
+      token: token ?? this.token,
+      expiryDate: expiryDate ?? this.expiryDate,
+      userId: userId ?? this.userId,
+      authTimer: authTimer ?? this.authTimer,
+      refreshTimer: refreshTimer ?? this.refreshTimer,
+    );
+  }
+}
+
+class Auth extends StateNotifier<AuthState> {
+  Auth(this.ref) : super(AuthState());
 
   final Ref ref;
 
@@ -30,14 +55,14 @@ class Auth with ChangeNotifier {
   }
 
   String? get userId {
-    return _userId;
+    return state.userId;
   }
 
   String? get token {
-    if (_expiryDate != null &&
-        _expiryDate!.isAfter(DateTime.now()) &&
-        _token != null) {
-      return _token;
+    if (state.expiryDate != null &&
+        state.expiryDate!.isAfter(DateTime.now()) &&
+        state.token != null) {
+      return state.token;
     }
     return null;
   }
@@ -53,10 +78,16 @@ class Auth with ChangeNotifier {
     if (expiryDate.isBefore(DateTime.now())) {
       return false;
     }
-    _token = extractedData["token"];
+    /*_token = extractedData["token"];
     _userId = extractedData["userId"];
     _expiryDate = expiryDate;
-    notifyListeners();
+    notifyListeners();*/
+
+    state.copyWith(
+      token: extractedData["token"],
+      userId: extractedData["userId"],
+    );
+
     _autoLogout();
     _autoRefreshToken();
     return true;
@@ -83,23 +114,24 @@ class Auth with ChangeNotifier {
       if (res.statusCode == 200) {
         final resData = json.decode(res.body);
 
-        _token = resData["jwt_token"];
+        state.copyWith(
+          token: resData["jwt_token"],
+          userId: username,
+        );
 
-        _userId = username;
-
-        if (_token != null) {
-          _expiryDate = JwtDecoder.getExpirationDate(_token!);
+        if (state.token != null) {
+          state.copyWith(
+            expiryDate: JwtDecoder.getExpirationDate(state.token!),
+          );
 
           _autoLogout();
           _autoRefreshToken();
 
-          notifyListeners();
-
           final prefs = await SharedPreferences.getInstance();
           final userData = json.encode({
-            "token": _token,
-            "userId": _userId,
-            "expiryDate": JwtDecoder.getExpirationDate(_token!),
+            "token": state.token,
+            "userId": state.userId,
+            "expiryDate": state.expiryDate,
           });
 
           prefs.setString("authInfo", userData);
@@ -125,34 +157,33 @@ class Auth with ChangeNotifier {
         headers: {
           "Accept": "application/json",
           "content-type": "application/json",
-          "Authorization": "Bearer " + _token!
+          "Authorization": "Bearer " + state.token!
         },
         body: json.encode(
-          {"jwt_token": _token},
+          {"jwt_token": state.token},
         ),
       );
 
       if (res.statusCode == 200) {
         final resData = json.decode(res.body);
 
-        _token = resData["jwt_token"];
-
         if (token == null) {
           throw "No token recieved";
         }
 
-        _expiryDate = JwtDecoder.getExpirationDate(_token!);
+        state.copyWith(
+          token: resData["jwt_token"],
+          expiryDate: JwtDecoder.getExpirationDate(resData["jwt_token"]),
+        );
 
         _autoLogout();
         _autoRefreshToken();
 
-        notifyListeners();
-
         final prefs = await SharedPreferences.getInstance();
         final userData = json.encode({
-          "token": _token,
-          "userId": _userId,
-          "expiryDate": JwtDecoder.getExpirationDate(_token!),
+          "token": state.token,
+          "userId": state.userId,
+          "expiryDate": state.expiryDate,
         });
 
         prefs.setString("authInfo", userData);
@@ -168,38 +199,42 @@ class Auth with ChangeNotifier {
   }
 
   Future<void> logout() async {
-    _token = null;
-    _userId = null;
-    _expiryDate = null;
-    if (_authTimer != null) {
-      _authTimer!.cancel();
+    state.copyWith(token: null, expiryDate: null, userId: null);
+    if (state.authTimer != null) {
+      state.authTimer!.cancel();
     }
-    if (_refreshTimer != null) {
-      _refreshTimer!.cancel();
+    if (state.refreshTimer != null) {
+      state.refreshTimer!.cancel();
     }
 
     //clearData();
 
     final prefs = await SharedPreferences.getInstance();
     prefs.clear();
-    notifyListeners();
   }
 
   void _autoLogout() {
-    if (_authTimer != null) {
-      _authTimer!.cancel();
+    if (state.authTimer != null) {
+      state.authTimer!.cancel();
     }
 
-    final _timeToExpiry = _expiryDate!.difference(DateTime.now()).inSeconds;
-    _authTimer = Timer(Duration(seconds: _timeToExpiry), logout);
+    final _timeToExpiry =
+        state.expiryDate!.difference(DateTime.now()).inSeconds;
+
+    state.copyWith(
+      authTimer: Timer(Duration(seconds: _timeToExpiry), logout),
+    );
   }
 
   void _autoRefreshToken() {
-    if (_refreshTimer != null) {
-      _refreshTimer!.cancel();
+    if (state.refreshTimer != null) {
+      state.refreshTimer!.cancel();
     }
-    final _timeToExpiry = _expiryDate!.difference(DateTime.now()).inSeconds;
-    _refreshTimer = Timer(Duration(seconds: _timeToExpiry - 30), _tryReferesh);
+    final _timeToExpiry =
+        state.expiryDate!.difference(DateTime.now()).inSeconds;
+    state.copyWith(
+      refreshTimer: Timer(Duration(seconds: _timeToExpiry - 30), _tryReferesh),
+    );
   }
 
   void _tryReferesh() {
