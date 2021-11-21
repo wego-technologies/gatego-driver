@@ -38,6 +38,8 @@ dependencies:
   jwt_decoder: ^2.0.1
   riverpod: ^1.0.0
   shared_preferences: ^2.0.9
+  hooks_riverpod: ^1.0.0
+
 
 dev_dependencies:
   flutter_test:
