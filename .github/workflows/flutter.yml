@@ -54,7 +54,9 @@ jobs:
       - name: Release Apps
         uses: ncipollo/release-action@v1
         with:
+          prerelease: true
           tag: ${{ env.APP_VERSION }}
           name: ${{ env.APP_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
           artifacts: 'build/app/outputs/apk/release/*.apk,build/ios/iphoneos/app.ipa,build/web/web-app.zip'
+          
