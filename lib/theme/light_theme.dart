@@ -51,6 +51,15 @@ ThemeData lightTheme() {
           borderRadius: BorderRadius.circular(12),
         ),
       ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ButtonStyle(
+          shape: MaterialStateProperty.resolveWith(
+            (states) => RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+      ),
       backgroundColor: const Color(0xffECEEF4),
       fontFamily: "Inter");
 }
