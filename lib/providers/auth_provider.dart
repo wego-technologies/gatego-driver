@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:guard_app/providers/providers.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:riverpod/riverpod.dart';
@@ -241,12 +242,12 @@ class Auth extends StateNotifier<AuthState> {
     _refreshToken();
   }
 
-  /*void clearData(BuildContext context) {
-    Future.delayed(Duration(milliseconds: 0), () {
-      ref.read(AccountProvider).clear();
-      Provider.of<CarrierProvider>(context, listen: false).clear();
+  void clearData(BuildContext context) {
+    Future.delayed(const Duration(milliseconds: 0), () {
+      ref.read(accountProvider.notifier).clear();
+      /*Provider.of<CarrierProvider>(context, listen: false).clear();
       Provider.of<YardProvider>(context, listen: false).clear();
-      Provider.of<SummaryProvider>(context, listen: false).clear();
+      Provider.of<SummaryProvider>(context, listen: false).clear();*/
     });
-  }*/
+  }
 }
