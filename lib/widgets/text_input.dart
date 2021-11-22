@@ -28,8 +28,6 @@ class TextInput extends StatefulWidget {
 class _TextInputState extends State<TextInput> {
   late Color colorIcon;
   late Color colorShadow;
-  double blurRadius = 5;
-  double spreadRadius = 1;
 
   @override
   void initState() {
@@ -45,8 +43,6 @@ class _TextInputState extends State<TextInput> {
               colorIcon = const Color(0xff00a1d3);
               colorShadow = const Color(0xffb2e3f2);
             }
-            blurRadius = 2;
-            spreadRadius = 5;
           },
         );
       } else {
@@ -59,8 +55,6 @@ class _TextInputState extends State<TextInput> {
               colorIcon = const Color(0xffd8d8d8);
               colorShadow = const Color(0xffe6e6e6);
             }
-            blurRadius = 5;
-            spreadRadius = 1;
           },
         );
       }
@@ -112,8 +106,8 @@ class _TextInputState extends State<TextInput> {
               decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(
-                      blurRadius: blurRadius,
-                      spreadRadius: spreadRadius,
+                      blurRadius: 0,
+                      spreadRadius: widget.fn.hasFocus ? 3 : 1,
                       color: colorShadow)
                 ],
                 borderRadius: BorderRadius.circular(10),
@@ -154,7 +148,8 @@ class _TextInputState extends State<TextInput> {
                           hintText: widget.text,
                           hintStyle: const TextStyle(
                               //color: Color(0xff727272),
-                              fontWeight: FontWeight.w300),
+                              // fontWeight: FontWeight.w300,
+                              fontSize: 13),
                         ),
                       ),
                     ),
