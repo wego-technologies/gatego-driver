@@ -22,7 +22,7 @@ class AccountProvider extends StateNotifier<AccountState> {
   AccountProvider(this.ref) : super(AccountState(null));
   final Ref ref;
 
-  Future<void> getMe() async {
+  Future<Account?> getMe() async {
     final token = ref.read(authProvider).token;
 
     /*if (retryTimer != null) {
@@ -62,11 +62,12 @@ class AccountProvider extends StateNotifier<AccountState> {
             deletedAt: _deletedAt,
             driver: genDriver(resData),
             email: resData["email"],
-            organization: Organization.fromJson(resData["organization"]),
+            organization: Organization.fromMap(resData["organization"]),
             phoneNumber: resData["phone_number"],
             yardId: resData["yard_id"],
           );
         }
+        return state.account;
       } catch (e) {
         /*print("Trying to reconnet");
         retryTimer = Timer(

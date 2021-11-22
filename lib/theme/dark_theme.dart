@@ -40,12 +40,29 @@ ThemeData darkTheme() {
     ),
     cardTheme: CardTheme(
       elevation: 4,
+      color: const Color(0xff37383d),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(
           8,
         ),
       ),
     ),
-    backgroundColor: const Color(0xffF7F9FD),
+    shadowColor: const Color(0xff494b52),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ButtonStyle(
+        shape: MaterialStateProperty.resolveWith(
+          (states) => RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        backgroundColor: MaterialStateProperty.resolveWith(
+          (states) => const Color(0xff00a1d3),
+        ),
+        shadowColor: MaterialStateProperty.resolveWith(
+          (states) => const Color(0xff494b52),
+        ),
+      ),
+    ),
+    backgroundColor: const Color(0xff494b52),
   );
 }
