@@ -107,10 +107,10 @@ class _TextInputState extends State<TextInput> {
                 boxShadow: [
                   BoxShadow(
                       blurRadius: 0,
-                      spreadRadius: widget.fn.hasFocus ? 3 : 1,
+                      spreadRadius: widget.fn.hasFocus ? 2 : 0.5,
                       color: colorShadow)
                 ],
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
                 color: bgColor,
               ),
               child: Row(

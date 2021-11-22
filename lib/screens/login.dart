@@ -37,6 +37,7 @@ class LoginPage extends HookWidget {
                     Text(
                       '''Welcome to the gatego guard app.
 Please log in to continue''',
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
@@ -71,9 +72,33 @@ Please log in to continue''',
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      ElevatedButton(
+                      ElevatedButton.icon(
+                        icon: const Icon(
+                          Icons.login_rounded,
+                          size: 18,
+                        ),
+                        style: ButtonStyle(
+                          padding: MaterialStateProperty.resolveWith(
+                            (states) => const EdgeInsets.symmetric(
+                                horizontal: 50, vertical: 10),
+                          ),
+                          shape: MaterialStateProperty.resolveWith(
+                            (states) => RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50000),
+                            ),
+                          ),
+                        ),
                         onPressed: () {},
-                        child: const Text("Login"),
+                        label: Text(
+                          "Log In",
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline6
+                              ?.copyWith(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
                   ),
