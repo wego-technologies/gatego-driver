@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:guard_app/screens/login.dart';
+import 'package:guard_app/theme/dark_theme.dart';
+import 'package:guard_app/theme/light_theme.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'utils/create_swatch.dart';
 
@@ -15,25 +18,9 @@ class MyApp extends StatelessWidget {
     return ProviderScope(
       child: MaterialApp(
         title: 'Gatego Guard',
-        theme: ThemeData(
-          primarySwatch: genSwatch(const Color(0xFF00A9DE)),
-        ),
+        theme: lightTheme(),
+        darkTheme: darkTheme(),
         home: const LoginPage(title: 'Login Page'),
-      ),
-    );
-  }
-}
-
-class LoginPage extends StatelessWidget {
-  const LoginPage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
       ),
     );
   }
