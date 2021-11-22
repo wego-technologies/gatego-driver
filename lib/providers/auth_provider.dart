@@ -21,13 +21,15 @@ class AuthState {
   String? userId;
   Timer? authTimer;
   Timer? refreshTimer;
+  bool isAuthing;
 
   AuthState(
       {this.authTimer,
       this.expiryDate,
       this.refreshTimer,
       this.token,
-      this.userId});
+      this.userId,
+      this.isAuthing = false});
 
   AuthState copyWith({
     String? token,
@@ -35,6 +37,7 @@ class AuthState {
     String? userId,
     Timer? authTimer,
     Timer? refreshTimer,
+    bool? isAuthing,
   }) {
     return AuthState(
       token: token ?? this.token,
@@ -42,6 +45,7 @@ class AuthState {
       userId: userId ?? this.userId,
       authTimer: authTimer ?? this.authTimer,
       refreshTimer: refreshTimer ?? this.refreshTimer,
+      isAuthing: isAuthing ?? this.isAuthing,
     );
   }
 }
@@ -72,14 +76,21 @@ class Auth extends StateNotifier<AuthState> {
     if (isAuth) {
       return true;
     }
+
+    state = state.copyWith(isAuthing: true);
+
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey("authInfo")) {
+      state = state.copyWith(isAuthing: false);
+
       return false;
     }
     final extractedData =
         json.decode(prefs.getString("authInfo")!) as Map<String, dynamic>;
     final expiryDate = DateTime.parse(extractedData["expiryDate"]);
     if (expiryDate.isBefore(DateTime.now())) {
+      state = state.copyWith(isAuthing: false);
+
       return false;
     }
     /*_token = extractedData["token"];
@@ -95,6 +106,8 @@ class Auth extends StateNotifier<AuthState> {
 
     _autoLogout();
     _autoRefreshToken();
+    state = state.copyWith(isAuthing: false);
+
     return true;
   }
 
@@ -126,7 +139,7 @@ class Auth extends StateNotifier<AuthState> {
           userId: username,
         );
 
-        if (state.token != null) {
+        if (tempState.token != null) {
           tempState = tempState.copyWith(
             expiryDate: JwtDecoder.getExpirationDate(state.token!),
           );
@@ -202,8 +215,19 @@ class Auth extends StateNotifier<AuthState> {
     }
   }
 
-  Future<bool> signIn(email, passw) async {
-    await _auth(email, passw);
+  Future<bool> signIn(String email, String passw) async {
+    if ((email.isEmpty || passw.isEmpty || passw.length < 8) && !isAuth) {
+      return false;
+    }
+    state = state.copyWith(isAuthing: true);
+    try {
+      await _auth(email, passw);
+    } catch (e) {
+      state = state.copyWith(isAuthing: false);
+      return false;
+    }
+
+    state = state.copyWith(isAuthing: false);
     return isAuth;
   }
 

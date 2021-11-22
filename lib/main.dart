@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:guard_app/providers/providers.dart';
 import 'package:guard_app/screens/login.dart';
 import 'package:guard_app/theme/dark_theme.dart';
 import 'package:guard_app/theme/light_theme.dart';
@@ -23,5 +24,18 @@ class MyApp extends StatelessWidget {
         home: const LoginPage(title: 'Login Page'),
       ),
     );
+  }
+}
+
+class AuthWrapper extends HookConsumerWidget {
+  const AuthWrapper({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final useAuth = ref.watch(authProvider.notifier);
+
+    final autoLoginState = useAuth.tryAutoLogin();
+
+    return Container();
   }
 }

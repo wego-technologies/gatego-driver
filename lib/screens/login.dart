@@ -17,73 +17,69 @@ class LoginPage extends HookConsumerWidget {
     final usernameFocusNode = useFocusNode();
     final passwordFocusNode = useFocusNode();
 
-    final useAuth = ref.watch(authProvider.notifier);
-
-    final autoLoginState = useAuth.tryAutoLogin();
+    final useAuth = ref.watch(authProvider);
 
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: FutureBuilder<bool>(
-              future: autoLoginState,
-              builder: (context, future) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: const [
-                          Logo(
-                            width: 170,
-                          ),
-                          SizedBox(
-                            height: 12,
-                          ),
-                          Text(
-                            '''Welcome to the gatego guard app.
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: const [
+                    Logo(
+                      width: 170,
+                    ),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    Text(
+                      '''Welcome to the gatego guard app.
           Please log in to continue''',
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 30),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            TextInput(
-                              c: usernameController,
-                              fn: usernameFocusNode,
-                              text: "Username or Email",
-                              icon: Icons.person,
-                            ),
-                            TextInput(
-                              c: passwordController,
-                              fn: passwordFocusNode,
-                              obscureText: true,
-                              icon: Icons.vpn_key,
-                              text: "Password",
-                              nextFocus: (string) {},
-                            ),
-                          ],
-                        ),
+                  ],
+                ),
+              ),
+              Card(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 30),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextInput(
+                        c: usernameController,
+                        fn: usernameFocusNode,
+                        text: "Username or Email",
+                        icon: Icons.person,
                       ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 50),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            ElevatedButton.icon(
+                      TextInput(
+                        c: passwordController,
+                        fn: passwordFocusNode,
+                        obscureText: true,
+                        icon: Icons.vpn_key,
+                        text: "Password",
+                        nextFocus: (string) {},
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 50),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      !useAuth.isAuthing
+                          ? ElevatedButton.icon(
                               icon: const Icon(
                                 Icons.login_rounded,
                                 size: 18,
@@ -113,14 +109,16 @@ class LoginPage extends HookConsumerWidget {
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold),
                               ),
+                            )
+                          : CircularProgressIndicator(
+                              color: Theme.of(context).primaryColor,
                             ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              }),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
