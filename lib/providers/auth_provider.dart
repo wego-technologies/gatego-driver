@@ -69,6 +69,9 @@ class Auth extends StateNotifier<AuthState> {
   }
 
   Future<bool> tryAutoLogin() async {
+    if (isAuth) {
+      return true;
+    }
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey("authInfo")) {
       return false;
@@ -84,9 +87,10 @@ class Auth extends StateNotifier<AuthState> {
     _expiryDate = expiryDate;
     notifyListeners();*/
 
-    state.copyWith(
+    state = state.copyWith(
       token: extractedData["token"],
       userId: extractedData["userId"],
+      expiryDate: expiryDate,
     );
 
     _autoLogout();
@@ -115,24 +119,28 @@ class Auth extends StateNotifier<AuthState> {
       if (res.statusCode == 200) {
         final resData = json.decode(res.body);
 
-        state.copyWith(
+        var tempState = state;
+
+        tempState = tempState.copyWith(
           token: resData["jwt_token"],
           userId: username,
         );
 
         if (state.token != null) {
-          state.copyWith(
+          tempState = tempState.copyWith(
             expiryDate: JwtDecoder.getExpirationDate(state.token!),
           );
+
+          state = tempState;
 
           _autoLogout();
           _autoRefreshToken();
 
           final prefs = await SharedPreferences.getInstance();
           final userData = json.encode({
-            "token": state.token,
+            "token": tempState.token,
             "userId": state.userId,
-            "expiryDate": state.expiryDate,
+            "expiryDate": state.expiryDate!.toIso8601String(),
           });
 
           prefs.setString("authInfo", userData);
@@ -172,7 +180,7 @@ class Auth extends StateNotifier<AuthState> {
           throw "No token recieved";
         }
 
-        state.copyWith(
+        state = state.copyWith(
           token: resData["jwt_token"],
           expiryDate: JwtDecoder.getExpirationDate(resData["jwt_token"]),
         );
@@ -200,7 +208,7 @@ class Auth extends StateNotifier<AuthState> {
   }
 
   Future<void> logout() async {
-    state.copyWith(token: null, expiryDate: null, userId: null);
+    state = state.copyWith(token: null, expiryDate: null, userId: null);
     if (state.authTimer != null) {
       state.authTimer!.cancel();
     }
@@ -222,7 +230,7 @@ class Auth extends StateNotifier<AuthState> {
     final _timeToExpiry =
         state.expiryDate!.difference(DateTime.now()).inSeconds;
 
-    state.copyWith(
+    state = state.copyWith(
       authTimer: Timer(Duration(seconds: _timeToExpiry), logout),
     );
   }
@@ -233,7 +241,7 @@ class Auth extends StateNotifier<AuthState> {
     }
     final _timeToExpiry =
         state.expiryDate!.difference(DateTime.now()).inSeconds;
-    state.copyWith(
+    state = state.copyWith(
       refreshTimer: Timer(Duration(seconds: _timeToExpiry - 30), _tryReferesh),
     );
   }
