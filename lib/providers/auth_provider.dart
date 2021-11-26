@@ -22,6 +22,7 @@ class AuthState {
   Timer? authTimer;
   Timer? refreshTimer;
   bool isAuthing;
+  String? errorState;
 
   AuthState(
       {this.authTimer,
@@ -29,16 +30,17 @@ class AuthState {
       this.refreshTimer,
       this.token,
       this.userId,
-      this.isAuthing = false});
+      this.isAuthing = false,
+      this.errorState});
 
-  AuthState copyWith({
-    String? token,
-    DateTime? expiryDate,
-    String? userId,
-    Timer? authTimer,
-    Timer? refreshTimer,
-    bool? isAuthing,
-  }) {
+  AuthState copyWith(
+      {String? token,
+      DateTime? expiryDate,
+      String? userId,
+      Timer? authTimer,
+      Timer? refreshTimer,
+      bool? isAuthing,
+      String? errorState}) {
     return AuthState(
       token: token ?? this.token,
       expiryDate: expiryDate ?? this.expiryDate,
@@ -46,6 +48,7 @@ class AuthState {
       authTimer: authTimer ?? this.authTimer,
       refreshTimer: refreshTimer ?? this.refreshTimer,
       isAuthing: isAuthing ?? this.isAuthing,
+      errorState: errorState ?? this.errorState,
     );
   }
 }
@@ -141,7 +144,7 @@ class Auth extends StateNotifier<AuthState> {
 
         if (tempState.token != null) {
           tempState = tempState.copyWith(
-            expiryDate: JwtDecoder.getExpirationDate(state.token!),
+            expiryDate: JwtDecoder.getExpirationDate(tempState.token!),
           );
 
           state = tempState;
@@ -160,6 +163,9 @@ class Auth extends StateNotifier<AuthState> {
         } else {
           throw "No token recieved";
         }
+      } else {
+        final resData = json.decode(res.body);
+        throw (res.statusCode.toString() + ": " + resData["error_code"]);
       }
     } catch (err) {
       rethrow;
@@ -217,17 +223,22 @@ class Auth extends StateNotifier<AuthState> {
 
   Future<bool> signIn(String email, String passw) async {
     if ((email.isEmpty || passw.isEmpty || passw.length < 8) && !isAuth) {
+      state = state.copyWith(
+        errorState: "Password too short",
+        isAuthing: false,
+      );
       return false;
     }
     state = state.copyWith(isAuthing: true);
     try {
       await _auth(email, passw);
     } catch (e) {
-      state = state.copyWith(isAuthing: false);
-      return false;
+      print(e);
+      state = state.copyWith(isAuthing: false, errorState: e.toString());
+      rethrow;
     }
 
-    state = state.copyWith(isAuthing: false);
+    state = state.copyWith(isAuthing: false, errorState: null);
     return isAuth;
   }
 

@@ -1,5 +1,9 @@
+import 'dart:math';
+
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:guard_app/providers/providers.dart';
+import 'package:guard_app/screens/yard_selector.dart';
 import 'package:guard_app/widgets/logo.dart';
 import 'package:guard_app/widgets/text_input.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -18,106 +22,157 @@ class LoginPage extends HookConsumerWidget {
     final passwordFocusNode = useFocusNode();
 
     final useAuth = ref.watch(authProvider);
+    final useAuthNotifier = ref.watch(authProvider.notifier);
+    final mediaQuery = MediaQuery.of(context);
+
+    if (useAuthNotifier.isAuth) {
+      Beamer.of(context).beamToNamed('/yardSelection');
+    }
 
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
-                    Logo(
-                      width: 170,
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    Text(
-                      '''Welcome to the gatego guard app.
-          Please log in to continue''',
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-              Card(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 30),
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Container(
+            height: max(
+                mediaQuery.size.height -
+                    mediaQuery.padding.top -
+                    mediaQuery.padding.bottom -
+                    mediaQuery.viewInsets.bottom,
+                useAuth.errorState != null ? 490 : 450),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextInput(
-                        c: usernameController,
-                        fn: usernameFocusNode,
-                        text: "Username or Email",
-                        icon: Icons.person,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: const [
+                      Logo(
+                        width: 170,
                       ),
-                      TextInput(
-                        c: passwordController,
-                        fn: passwordFocusNode,
-                        obscureText: true,
-                        icon: Icons.vpn_key,
-                        text: "Password",
-                        nextFocus: (string) {},
+                      SizedBox(
+                        height: 12,
+                      ),
+                      Text(
+                        '''Welcome to the gatego guard app.
+Please log in to continue''',
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 50),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      !useAuth.isAuthing
-                          ? ElevatedButton.icon(
-                              icon: const Icon(
-                                Icons.login_rounded,
-                                size: 18,
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 30),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextInput(
+                          c: usernameController,
+                          fn: usernameFocusNode,
+                          text: "Username or Email",
+                          icon: Icons.person,
+                        ),
+                        TextInput(
+                          c: passwordController,
+                          fn: passwordFocusNode,
+                          obscureText: true,
+                          icon: Icons.vpn_key,
+                          text: "Password",
+                          nextFocus: (string) {},
+                        ),
+                        if (useAuth.errorState != null)
+                          SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: Card(
+                              color:
+                                  Theme.of(context).errorColor.withAlpha(200),
+                              child: Row(
+                                children: [
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  const Icon(
+                                    Icons.warning_rounded,
+                                    color: Colors.white,
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    useAuth.errorState!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
                               ),
-                              style: ButtonStyle(
-                                padding: MaterialStateProperty.resolveWith(
-                                  (states) => const EdgeInsets.symmetric(
-                                      horizontal: 50, vertical: 10),
+                            ),
+                          )
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: SizedBox(),
+                        ),
+                        !useAuth.isAuthing
+                            ? ElevatedButton.icon(
+                                icon: const Icon(
+                                  Icons.login_rounded,
+                                  size: 18,
                                 ),
-                                shape: MaterialStateProperty.resolveWith(
-                                  (states) => RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(50000),
+                                style: ButtonStyle(
+                                  padding: MaterialStateProperty.resolveWith(
+                                    (states) => const EdgeInsets.symmetric(
+                                        horizontal: 50, vertical: 10),
+                                  ),
+                                  shape: MaterialStateProperty.resolveWith(
+                                    (states) => RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(50000),
+                                    ),
                                   ),
                                 ),
+                                onPressed: () {
+                                  login(usernameController.text,
+                                      passwordController.text, ref);
+                                },
+                                label: Text(
+                                  "Log In",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline6
+                                      ?.copyWith(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                ),
+                              )
+                            : CircularProgressIndicator(
+                                color: Theme.of(context).primaryColor,
                               ),
-                              onPressed: () {
-                                login(usernameController.text,
-                                    passwordController.text, ref);
-                              },
-                              label: Text(
-                                "Log In",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline6
-                                    ?.copyWith(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                              ),
-                            )
-                          : CircularProgressIndicator(
-                              color: Theme.of(context).primaryColor,
-                            ),
-                    ],
+                        Expanded(
+                          child: SizedBox(),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -126,7 +181,12 @@ class LoginPage extends HookConsumerWidget {
 }
 
 void login(String usr, String psw, WidgetRef ref) async {
-  final resLogin = await ref.read(authProvider.notifier).signIn(usr, psw);
+  final bool resLogin;
+  try {
+    resLogin = await ref.read(authProvider.notifier).signIn(usr, psw);
+  } catch (e) {
+    return;
+  }
 
   if (resLogin & ref.read(authProvider.notifier).isAuth) {
     print((await ref.read(accountProvider.notifier).getMe())!.id);
