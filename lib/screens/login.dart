@@ -25,10 +25,6 @@ class LoginPage extends HookConsumerWidget {
     final useAuthNotifier = ref.watch(authProvider.notifier);
     final mediaQuery = MediaQuery.of(context);
 
-    if (useAuthNotifier.isAuth) {
-      Beamer.of(context).beamToNamed('/yardSelection');
-    }
-
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       body: SafeArea(

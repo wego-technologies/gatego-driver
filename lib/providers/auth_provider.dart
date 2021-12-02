@@ -80,20 +80,14 @@ class Auth extends StateNotifier<AuthState> {
       return true;
     }
 
-    state = state.copyWith(isAuthing: true);
-
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey("authInfo")) {
-      state = state.copyWith(isAuthing: false);
-
       return false;
     }
     final extractedData =
         json.decode(prefs.getString("authInfo")!) as Map<String, dynamic>;
     final expiryDate = DateTime.parse(extractedData["expiryDate"]);
     if (expiryDate.isBefore(DateTime.now())) {
-      state = state.copyWith(isAuthing: false);
-
       return false;
     }
     /*_token = extractedData["token"];
@@ -106,10 +100,10 @@ class Auth extends StateNotifier<AuthState> {
       userId: extractedData["userId"],
       expiryDate: expiryDate,
     );
+    print("Logged in");
 
     _autoLogout();
     _autoRefreshToken();
-    state = state.copyWith(isAuthing: false);
 
     return true;
   }
@@ -195,7 +189,7 @@ class Auth extends StateNotifier<AuthState> {
       if (res.statusCode == 200) {
         final resData = json.decode(res.body);
 
-        if (token == null) {
+        if (resData["jwt_token"] == null) {
           throw "No token recieved";
         }
 
@@ -211,7 +205,7 @@ class Auth extends StateNotifier<AuthState> {
         final userData = json.encode({
           "token": state.token,
           "userId": state.userId,
-          "expiryDate": state.expiryDate,
+          "expiryDate": state.expiryDate?.toIso8601String(),
         });
 
         prefs.setString("authInfo", userData);
