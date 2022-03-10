@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
@@ -7,7 +8,9 @@ import 'package:background_locator/settings/ios_settings.dart';
 import 'package:background_locator/settings/locator_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:background_locator/background_locator.dart';
+import 'package:guard_app/widgets/logo.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 const String _isolateName = "LocatorIsolate";
 ReceivePort port = ReceivePort();
@@ -37,8 +40,75 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text("Sharing Location")),
+    return Scaffold(
+      body: SafeArea(
+        child: Container(
+          width: double.infinity,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Logo(),
+              const SizedBox(
+                height: 10,
+              ),
+              FutureBuilder<PermissionStatus>(
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Column(
+                      children: const [
+                        Text("Checking premission status"),
+                        SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: CircularProgressIndicator(),
+                        ),
+                      ],
+                    );
+                  }
+                  if (snapshot.hasData) {
+                    if (!snapshot.data!.isGranted &&
+                        !snapshot.data!.isPermanentlyDenied) {
+                      return Column(
+                        children: [
+                          Text(
+                              "We need to access your location in the background, to do so please click on the button and then on permissions, location and 'Allow all the time'"),
+                          ElevatedButton(
+                              onPressed: () async {
+                                openAppSettings();
+                              },
+                              child: Text("Open Settings"))
+                        ],
+                      );
+                    } else if (snapshot.data!.isGranted) {
+                      startLocationService();
+                      return Column(
+                        children: [
+                          const Text("Location Sharing Started"),
+                          ElevatedButton(
+                              onPressed: () async {
+                                IsolateNameServer.removePortNameMapping(
+                                    _isolateName);
+                                await BackgroundLocator
+                                    .unRegisterLocationUpdate();
+                                exit(0);
+                              },
+                              child: Text("Stop Location Tracking"))
+                        ],
+                      );
+                    } else {
+                      openAppSettings();
+                      return const Text("Opening App Settings");
+                    }
+                  }
+                  return const Text("Unknown State, Contact Us for help.");
+                },
+                future: Permission.locationAlways.status,
+              )
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
