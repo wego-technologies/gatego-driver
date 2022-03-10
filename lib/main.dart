@@ -20,31 +20,18 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class NavigationWrapper extends HookConsumerWidget {
-  NavigationWrapper({Key? key}) : super(key: key);
-
-  final routerDelegate = BeamerDelegate(
-    initialPath: "/login",
-    locationBuilder: SimpleLocationBuilder(
-      routes: {
-        '/login': (context, state) => LoginPage(title: "Login Page"),
-        '/yardSelection': (context, state) => const YardSelectionPage(),
-      },
-    ),
-    // guards: [
-    //   // Guard /books and /books/* by beaming to /login if the user is unauthenticated:
-    //   BeamGuard(
-    //     pathBlueprints: ['/yardSelection'],
-    //     check: (BuildContext context, BeamLocation<BeamState> location) =>
-    //         ref.read(authProvider.notifier).isAuth != true,
-    //     beamToNamed: '/login',
-    //   ),
-    // ],
-    listener: (p0, p1) {
-      print(p0.uri);
-      print(p1.state.data.entries);
+final _routerDelegate = BeamerDelegate(
+  initialPath: "/login",
+  locationBuilder: RoutesLocationBuilder(
+    routes: {
+      '/login': (context, state, data) => const LoginPage(title: "Login Page"),
+      '/yardSelection': (context, state, data) => const YardSelectionPage(),
     },
-  );
+  ),
+);
+
+class NavigationWrapper extends HookConsumerWidget {
+  const NavigationWrapper({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -52,7 +39,7 @@ class NavigationWrapper extends HookConsumerWidget {
 
     return MaterialApp.router(
       routeInformationParser: BeamerParser(),
-      routerDelegate: routerDelegate,
+      routerDelegate: _routerDelegate,
       title: 'Gatego Guard',
       theme: lightTheme(),
       darkTheme: darkTheme(),

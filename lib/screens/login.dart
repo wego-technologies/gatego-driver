@@ -80,7 +80,10 @@ Please log in to continue''',
                           obscureText: true,
                           icon: Icons.vpn_key,
                           text: "Password",
-                          nextFocus: (string) {},
+                          nextFocus: (string) {
+                            login(usernameController.text,
+                                passwordController.text, ref);
+                          },
                         ),
                         if (useAuth.errorState != null)
                           SizedBox(
@@ -120,7 +123,7 @@ Please log in to continue''',
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Expanded(
+                        const Expanded(
                           flex: 5,
                           child: SizedBox(),
                         ),
@@ -160,7 +163,7 @@ Please log in to continue''',
                             : CircularProgressIndicator(
                                 color: Theme.of(context).primaryColor,
                               ),
-                        Expanded(
+                        const Expanded(
                           child: SizedBox(),
                         ),
                       ],
