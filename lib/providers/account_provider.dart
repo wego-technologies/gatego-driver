@@ -28,7 +28,7 @@ class AccountProvider extends StateNotifier<AccountState> {
     /*if (retryTimer != null) {
       retryTimer.cancel();
     }*/
-    if (token != null || state.account == null) {
+    if (token != null && state.account == null) {
       final url = DebugUtils().baseUrl + "api/account/me";
 
       try {
@@ -37,7 +37,7 @@ class AccountProvider extends StateNotifier<AccountState> {
           headers: {
             "Accept": "application/json",
             "content-type": "application/json",
-            "Authorization": "Bearer " + token!,
+            "Authorization": "Bearer " + token,
           },
         );
 
