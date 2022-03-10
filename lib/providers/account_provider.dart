@@ -50,8 +50,6 @@ class AccountProvider extends StateNotifier<AccountState> {
             _deletedAt = DateTime.tryParse(resData["deleted_at"]);
           }
 
-          // TODO: Some weirdness here
-
           state.account = Account(
             active: resData["active"],
             canViewCarrierIds: resData["can_view_carrier_ids"],
@@ -67,6 +65,7 @@ class AccountProvider extends StateNotifier<AccountState> {
             yardId: resData["yard_id"],
           );
         }
+        print("got me");
         return state.account;
       } catch (e) {
         /*print("Trying to reconnet");
@@ -79,6 +78,7 @@ class AccountProvider extends StateNotifier<AccountState> {
         rethrow;
       }
     }
+    return null;
   }
 
   get me {

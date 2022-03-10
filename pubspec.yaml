@@ -41,6 +41,7 @@ dependencies:
   hooks_riverpod: ^1.0.0
   flutter_svg: ^1.0.3
   beamer: ^1.4.0+1
+  background_locator: ^1.6.12
 
 
 dev_dependencies:

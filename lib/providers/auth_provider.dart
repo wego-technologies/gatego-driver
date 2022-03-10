@@ -80,14 +80,18 @@ class Auth extends StateNotifier<AuthState> {
       return true;
     }
 
+    state.isAuthing = true;
+
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey("authInfo")) {
+      state.isAuthing = false;
       return false;
     }
     final extractedData =
         json.decode(prefs.getString("authInfo")!) as Map<String, dynamic>;
     final expiryDate = DateTime.parse(extractedData["expiryDate"]);
     if (expiryDate.isBefore(DateTime.now())) {
+      state.isAuthing = false;
       return false;
     }
     /*_token = extractedData["token"];
@@ -102,8 +106,12 @@ class Auth extends StateNotifier<AuthState> {
     );
     print("Logged in");
 
+    await ref.read(accountProvider.notifier).getMe();
+
     _autoLogout();
     _autoRefreshToken();
+
+    state.isAuthing = false;
 
     return true;
   }
