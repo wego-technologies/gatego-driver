@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:guard_app/providers/providers.dart';
-import 'package:guard_app/screens/yard_selector.dart';
+import 'package:guard_app/screens/loc_sharing.dart';
 import 'package:guard_app/widgets/logo.dart';
 import 'package:guard_app/widgets/text_input.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -16,13 +16,17 @@ class LoginPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.read(authProvider.notifier).tryAutoLogin().then((value) {
+      context.beamToNamed("/locSharing");
+    });
+
     final usernameController = useTextEditingController();
     final passwordController = useTextEditingController();
     final usernameFocusNode = useFocusNode();
     final passwordFocusNode = useFocusNode();
 
     final useAuth = ref.watch(authProvider);
-    final useAuthNotifier = ref.watch(authProvider.notifier);
+    ref.watch(authProvider.notifier);
     final mediaQuery = MediaQuery.of(context);
 
     return Scaffold(
@@ -188,6 +192,6 @@ void login(String usr, String psw, WidgetRef ref) async {
   }
 
   if (resLogin & ref.read(authProvider.notifier).isAuth) {
-    print((await ref.read(accountProvider.notifier).getMe())!.id);
+    await ref.read(accountProvider.notifier).getMe();
   }
 }
