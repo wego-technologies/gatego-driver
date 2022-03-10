@@ -42,6 +42,7 @@ dependencies:
   flutter_svg: ^1.0.3
   beamer: ^1.4.0+1
   background_locator: ^1.6.12
+  permission_handler: ^9.2.0
 
 
 dev_dependencies:

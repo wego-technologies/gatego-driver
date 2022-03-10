@@ -24,7 +24,7 @@ final _routerDelegate = BeamerDelegate(
   initialPath: "/login",
   locationBuilder: RoutesLocationBuilder(
     routes: {
-      '/login': (context, state, data) => const LoginPage(title: "Login Page"),
+      '/login': (context, state, data) => LoginPage(title: "Login Page"),
       '/locSharing': (context, state, data) => const LocSharingPage(),
     },
   ),
