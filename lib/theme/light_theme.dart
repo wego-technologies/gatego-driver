@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:guard_app/utils/create_swatch.dart';
+import 'package:gatego_smartloc/utils/create_swatch.dart';
 
 ThemeData lightTheme() {
   return ThemeData(

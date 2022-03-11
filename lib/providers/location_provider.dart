@@ -7,7 +7,7 @@ import 'package:here_sdk/core.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:riverpod/riverpod.dart';
 
-import 'package:guard_app/providers/providers.dart';
+import 'package:gatego_smartloc/providers/providers.dart';
 
 class LocationState {
   bool isLocating;

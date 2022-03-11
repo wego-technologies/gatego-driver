@@ -1,7 +1,7 @@
 import 'package:background_location/background_location.dart';
-import 'package:guard_app/providers/account_provider.dart';
-import 'package:guard_app/providers/auth_provider.dart';
-import 'package:guard_app/providers/location_provider.dart';
+import 'package:gatego_smartloc/providers/account_provider.dart';
+import 'package:gatego_smartloc/providers/auth_provider.dart';
+import 'package:gatego_smartloc/providers/location_provider.dart';
 import 'package:here_sdk/mapview.dart' as here;
 import 'package:riverpod/riverpod.dart';
 

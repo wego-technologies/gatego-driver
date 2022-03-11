@@ -2,10 +2,10 @@ import 'dart:math';
 
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
-import 'package:guard_app/providers/auth_provider.dart';
-import 'package:guard_app/providers/providers.dart';
-import 'package:guard_app/widgets/logo.dart';
-import 'package:guard_app/widgets/text_input.dart';
+import 'package:gatego_smartloc/providers/auth_provider.dart';
+import 'package:gatego_smartloc/providers/providers.dart';
+import 'package:gatego_smartloc/widgets/logo.dart';
+import 'package:gatego_smartloc/widgets/text_input.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -64,7 +64,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         height: 12,
                       ),
                       Text(
-                        '''Welcome to the gatego guard app.
+                        '''Welcome to the gatego Smartloc app.
 Please log in to continue''',
                         textAlign: TextAlign.center,
                       ),

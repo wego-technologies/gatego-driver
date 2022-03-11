@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:guard_app/providers/providers.dart';
-import 'package:guard_app/screens/login.dart';
-import 'package:guard_app/screens/loc_sharing.dart';
-import 'package:guard_app/theme/dark_theme.dart';
-import 'package:guard_app/theme/light_theme.dart';
+import 'package:gatego_smartloc/providers/providers.dart';
+import 'package:gatego_smartloc/screens/login.dart';
+import 'package:gatego_smartloc/screens/loc_sharing.dart';
+import 'package:gatego_smartloc/theme/dark_theme.dart';
+import 'package:gatego_smartloc/theme/light_theme.dart';
 import 'package:here_sdk/core.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:beamer/beamer.dart';
@@ -43,7 +43,7 @@ class NavigationWrapper extends HookConsumerWidget {
     return MaterialApp.router(
       routeInformationParser: BeamerParser(),
       routerDelegate: _routerDelegate,
-      title: 'Gatego Guard',
+      title: 'Gatego Smartloc',
       theme: lightTheme(),
       darkTheme: darkTheme(),
     );

@@ -1,4 +1,4 @@
-# guard_app
+# gatego_smartloc
 
 A new Flutter project.
 

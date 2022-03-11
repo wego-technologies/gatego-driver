@@ -1,4 +1,4 @@
-package io.gatego.guard_app
+package io.gatego.smartloc
 
 import io.flutter.embedding.android.FlutterActivity
 
