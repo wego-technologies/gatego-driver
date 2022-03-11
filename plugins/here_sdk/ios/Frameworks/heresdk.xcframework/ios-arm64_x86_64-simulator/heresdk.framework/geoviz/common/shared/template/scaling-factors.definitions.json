@@ -1,0 +1,1 @@
+{"definitions": {"RefPpi": 72, "ScalePpi.none": 1, "ScalePpi.labels": ["+", ["*", ["-", ["ppi"], ["ref", "RefPpi"]], 0.005], 1], "ScalePpi.ppi.scale": ["+", ["*", ["-", ["ppi"], ["ref", "RefPpi"]], 0.0025], 1]}}

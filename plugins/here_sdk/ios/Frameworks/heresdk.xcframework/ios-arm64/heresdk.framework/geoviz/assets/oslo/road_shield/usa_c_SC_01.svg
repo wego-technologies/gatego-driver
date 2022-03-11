@@ -1,0 +1,18 @@
+<svg width="19" height="18" viewBox="0 0 19 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="usa_c_SC_01">
+<g id="_Elements / _usa_c_base">
+<g id="stretchable-items">
+<g id="SC-stretchable">
+<rect id="background" x="1.5" y="2" width="16" height="14" fill="white" stroke="#5397F0"/>
+<rect id="rectangle" x="1" y="1.5" width="17" height="3" fill="#5397F0"/>
+</g>
+</g>
+<g id="non-stretchable-items">
+<g id="SC-non-stretchable">
+<path id="shape02" d="M6.78246 1.5L5.49707 2.61788L7.49175 4.80736L9.52217 7.25615L13.7301 3.71039L11.3588 1.87103H10.2065L9.87406 1.5H6.78246Z" fill="white"/>
+<path id="shape01" d="M7.34798 1.96484L6.60962 2.66505L8.48761 4.77676L9.50444 6.34107V4.4834C9.40308 4.4834 9.14462 4.43947 8.97264 4.27654C8.66946 3.98932 8.63318 3.75604 8.67844 3.48448C8.7255 3.20213 9.02921 2.78295 9.68548 2.78295C10.3418 2.78295 10.6784 3.36522 10.602 3.81262C10.5228 4.27654 10.0702 4.4834 9.91178 4.4834V6.08546L12.5907 3.71078L11.0637 2.47364H9.85945L9.34773 1.96484H7.34798Z" fill="#5397F0"/>
+</g>
+</g>
+</g>
+</g>
+</svg>

@@ -1,0 +1,1 @@
+{"definitions": {"Is.Building.Layer": ["==", ["get", "$layer"], "buildings"], "Is.BuildingText.Layer": ["==", ["get", "$layer"], "buildings"], "Is.Building": ["==", ["get", "kind"], "building"], "Is.BuildingAddress": ["==", ["get", "kind"], "address"]}}

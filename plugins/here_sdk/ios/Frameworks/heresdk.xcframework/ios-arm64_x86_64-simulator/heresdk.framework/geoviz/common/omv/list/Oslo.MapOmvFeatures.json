@@ -1,0 +1,1 @@
+{"$concat": [{"$removeElement": {"filter": ["raster-tile-service"], "from": {"$ref": "./list/MapOmvFeatures.json#"}}}, {"$ref": "../../oslo/list/oslo.rts.features.json#"}]}

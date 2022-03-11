@@ -1,0 +1,1 @@
+{"definitions": {"zoomWidthPpiScaled": ["ppi-scale", ["ref", "zoomWidth"], ["ref", "ScalePpi.ppi.scale"]], "zoomWidthDiscretePpiScaled": ["ppi-scale", ["ref", "zoomWidthDiscrete"], ["ref", "ScalePpi.ppi.scale"]], "TrafficStyle.OnRoute.TraveledColor": "#00000000", "TrafficStyle.OnRoute.TraveledOutlineColor": "#00000000"}}

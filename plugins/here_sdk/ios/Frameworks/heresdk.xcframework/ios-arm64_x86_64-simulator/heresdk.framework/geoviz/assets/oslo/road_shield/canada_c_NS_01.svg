@@ -1,0 +1,17 @@
+<svg width="17" height="22" viewBox="0 0 17 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="canada_c_NS_01">
+<g id="_Elements / _canada_c_base">
+<g id="stretchable-items">
+<path id="shape01" d="M1.5 1.5H15.5V13.5C15.5 17.366 12.366 20.5 8.5 20.5C4.63401 20.5 1.5 17.366 1.5 13.5V1.5Z" fill="#5397F0" stroke="white"/>
+<rect id="shape02" x="2" y="2" width="13" height="6" fill="white"/>
+<path id="var01_shape03" d="M8.5 4.29167L14 2H15V3L10.2 5L15 7V8H14L8.5 5.70833L3 8H2V7L6.8 5L2 3V2H3L8.5 4.29167Z" fill="#5397F0"/>
+</g>
+<g id="non-stretchable-items">
+<g id="var01_symbol01">
+<path id="Rectangle 23" d="M6.5 3H10.5002V5.00012C10.5002 6.10475 9.60475 7.00024 8.50012 7.00024C7.39548 7.00024 6.5 6.10476 6.5 5.00012V3Z" fill="#FFF9BA"/>
+<circle id="Ellipse 6" cx="8.50006" cy="5.00006" r="1.00006" fill="#F56C6C"/>
+</g>
+</g>
+</g>
+</g>
+</svg>

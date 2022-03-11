@@ -1,0 +1,1 @@
+{"geofog": {"projections": ["Spherical"]}, "geohalo": {"projections": ["Spherical"]}, "landmarks": {"castsShadows": true, "enableFadeInTime": false, "description": "Soon"}, "northpole": {"projections": ["Spherical"]}, "southpole": {"projections": ["Spherical"]}, "tilezen_volumes": {"castsShadows": true, "enableFadeInTime": false}}

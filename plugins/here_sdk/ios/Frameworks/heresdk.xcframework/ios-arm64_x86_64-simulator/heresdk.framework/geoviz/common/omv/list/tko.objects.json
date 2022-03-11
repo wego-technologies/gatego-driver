@@ -1,0 +1,1 @@
+{"$concat": [{"$ref": "MapOmvObjects.json#"}, {"tilezen_building_footprints_japan": {"factory": "tilezen.building_footprint_japan"}}, {"tilezen_building_footprints_outlines_japan": {"factory": "tilezen.building_footprint_outline_japan"}}]}

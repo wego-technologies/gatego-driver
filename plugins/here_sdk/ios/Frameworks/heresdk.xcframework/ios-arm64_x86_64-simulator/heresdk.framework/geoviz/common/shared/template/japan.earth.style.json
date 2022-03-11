@@ -1,0 +1,1 @@
+{"styles": [{"extends": "earth_labels", "id": "japan_earth_labels", "styleSet": "tilezen_points", "when": ["all", ["ref", "Is.Earth"], ["==", ["get", "source"], "ipc"], ["ref", "Is.Island"]], "technique": "text", "category": ["case", ["ref", "Is.Island"], "japan-annotation-geo-labels", ["base-attribute-value"]]}]}

@@ -1,0 +1,1 @@
+{"northpole": {"alwaysShowRootLevel": true, "ignoreMaximumLevelTileCount": true}, "southpole": {"alwaysShowRootLevel": true, "ignoreMaximumLevelTileCount": true}, "rasterterrain": {"alwaysShowRootLevel": true, "prefetch": {"levelStep": 3, "allTopLevelTiles": true}}}
