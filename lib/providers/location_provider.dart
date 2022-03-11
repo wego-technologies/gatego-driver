@@ -125,8 +125,7 @@ class LocationProvider extends StateNotifier<LocationState> {
     state = state.copyWith(isLocating: true);
 
     BackgroundLocation.getLocationUpdates((location) {
-      ref.read(hereGeoCoords.state).state = GeoCoordinates.withAltitude(
-          location.latitude!, location.longitude!, location.altitude!);
+      ref.read(hereGeoCoords.state).state = location;
     });
   }
 
