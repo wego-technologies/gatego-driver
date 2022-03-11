@@ -24,15 +24,13 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
   Widget build(BuildContext context) {
     final locationState = ref.watch(locationProvider);
     final locationStateNotifier = ref.read(locationProvider.notifier);
-    final accountProv = ref.watch(accountProvider);
+    final accountProv = ref.watch(accountProvider).account;
 
     if (locationState.isPermissionGranted && !locationState.isLocating) {
       locationStateNotifier
           .initializeTracking()
           .then((value) => locationStateNotifier.beginTracking());
     }
-
-    print(accountProv.account);
 
     return Scaffold(
       body: SafeArea(
@@ -55,8 +53,7 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
                               CircleAvatar(
                                 backgroundColor:
                                     Theme.of(context).colorScheme.background,
-                                child: Text(
-                                    getInitials(accountProv.account?.name)),
+                                child: Text(getInitials(accountProv?.name)),
                               ),
                             ],
                           ),

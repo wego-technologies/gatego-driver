@@ -8,13 +8,27 @@ import 'package:guard_app/widgets/text_input.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class LoginPage extends HookConsumerWidget {
-  const LoginPage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+class LoginPage extends StatefulHookConsumerWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends ConsumerState<LoginPage> {
+  @override
+  void initState() {
+    ref.read(authProvider.notifier).tryAutoLogin().then((value) {
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
+        if (value) context.beamToNamed("/locSharing");
+      });
+    });
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final usernameController = useTextEditingController();
     final passwordController = useTextEditingController();
     final usernameFocusNode = useFocusNode();
@@ -22,12 +36,6 @@ class LoginPage extends HookConsumerWidget {
 
     final useAuth = ref.watch(authProvider);
     final mediaQuery = MediaQuery.of(context);
-
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      ref.read(authProvider.notifier).tryAutoLogin().then((value) {
-        if (value) context.beamToNamed("/locSharing");
-      });
-    });
 
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
