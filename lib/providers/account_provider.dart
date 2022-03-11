@@ -49,7 +49,7 @@ class AccountProvider extends StateNotifier<AccountState> {
             _deletedAt = DateTime.tryParse(resData["deleted_at"]);
           }
 
-          state = AccountState(Account(
+          state.account = Account(
             active: resData["active"],
             canViewCarrierIds: resData["can_view_carrier_ids"],
             role: stringToRole(resData["role"]),
@@ -62,7 +62,7 @@ class AccountProvider extends StateNotifier<AccountState> {
             organization: Organization.fromMap(resData["organization"]),
             phoneNumber: resData["phone_number"],
             yardId: resData["yard_id"],
-          ));
+          );
         }
 
         return state.account;

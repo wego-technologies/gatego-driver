@@ -3,7 +3,7 @@ class DebugUtils {
 
   String get baseUrl {
     assert(_inDebugMode = true);
-    if (_inDebugMode) {
+    if (false) {
       return "https://api-dev.gatego.io/";
     } else {
       return "https://api.gatego.io/";
