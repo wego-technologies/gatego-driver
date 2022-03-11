@@ -1,3 +1,4 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:guard_app/providers/providers.dart';
 import 'package:guard_app/widgets/logo.dart';
@@ -22,13 +23,18 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
   @override
   Widget build(BuildContext context) {
     final locationState = ref.watch(locationProvider);
-    final locationStateNotifier = ref.read(locationProvider.notifier);
+    final locationStateNotifier = ref.watch(locationProvider.notifier);
     final accountProv = ref.watch(accountProvider).account;
+    final authProv = ref.watch(authProvider.notifier);
 
     if (locationState.isPermissionGranted && !locationState.isLocating) {
       locationStateNotifier
           .initializeTracking()
           .then((value) => locationStateNotifier.beginTracking());
+    }
+
+    if (ref.read(accountProvider).account == null) {
+      WidgetsBinding.instance?.addPostFrameCallback((_) => setState(() {}));
     }
 
     return Scaffold(
@@ -45,6 +51,7 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Logo(width: 100),
                           Row(
@@ -54,6 +61,22 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
                                     Theme.of(context).colorScheme.background,
                                 child: Text(getInitials(accountProv?.name)),
                               ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                accountProv?.name ?? "No Name",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(fontSize: 20),
+                              ),
+                              IconButton(
+                                  onPressed: () async {
+                                    await authProv.logout();
+                                    Beamer.of(context).beamToNamed('/login');
+                                  },
+                                  icon: const Icon(Icons.logout))
                             ],
                           ),
                         ],

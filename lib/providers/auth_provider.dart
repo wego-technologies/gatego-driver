@@ -59,7 +59,7 @@ class Auth extends StateNotifier<AuthState> {
   final Ref ref;
 
   bool get isAuth {
-    return token != null;
+    return state.token != null;
   }
 
   String? get userId {
@@ -83,18 +83,18 @@ class Auth extends StateNotifier<AuthState> {
       return false;
     }
 
-    state.isAuthing = true;
+    state = state.copyWith(isAuthing: true);
 
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey("authInfo")) {
-      state.isAuthing = false;
+      state = state.copyWith(isAuthing: false);
       return false;
     }
     final extractedData =
         json.decode(prefs.getString("authInfo")!) as Map<String, dynamic>;
     final expiryDate = DateTime.parse(extractedData["expiryDate"]);
     if (expiryDate.isBefore(DateTime.now())) {
-      state.isAuthing = false;
+      state = state.copyWith(isAuthing: false);
       return false;
     }
     /*_token = extractedData["token"];
@@ -114,7 +114,7 @@ class Auth extends StateNotifier<AuthState> {
     _autoLogout();
     _autoRefreshToken();
 
-    state.isAuthing = false;
+    state = state.copyWith(isAuthing: false);
 
     return true;
   }
@@ -248,7 +248,6 @@ class Auth extends StateNotifier<AuthState> {
   }
 
   Future<void> logout() async {
-    state = state.copyWith(token: null, expiryDate: null, userId: null);
     if (state.authTimer != null) {
       state.authTimer!.cancel();
     }
@@ -256,7 +255,9 @@ class Auth extends StateNotifier<AuthState> {
       state.refreshTimer!.cancel();
     }
 
-    //clearData();
+    state = state.copyWith(token: null, expiryDate: null, userId: null);
+
+    clearData();
 
     final prefs = await SharedPreferences.getInstance();
     prefs.clear();
@@ -290,7 +291,7 @@ class Auth extends StateNotifier<AuthState> {
     _refreshToken();
   }
 
-  void clearData(BuildContext context) {
+  void clearData() {
     Future.delayed(const Duration(milliseconds: 0), () {
       ref.read(accountProvider.notifier).clear();
       /*Provider.of<CarrierProvider>(context, listen: false).clear();

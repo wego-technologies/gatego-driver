@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:guard_app/providers/providers.dart';
 import 'package:guard_app/screens/login.dart';
 import 'package:guard_app/screens/loc_sharing.dart';
 import 'package:guard_app/theme/dark_theme.dart';
@@ -34,6 +35,8 @@ class NavigationWrapper extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    WidgetsBinding.instance?.addPostFrameCallback(
+        (_) => ref.read(authProvider.notifier).tryAutoLogin());
     return MaterialApp.router(
       routeInformationParser: BeamerParser(),
       routerDelegate: _routerDelegate,
