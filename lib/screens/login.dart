@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
+import 'package:guard_app/providers/auth_provider.dart';
 import 'package:guard_app/providers/providers.dart';
 import 'package:guard_app/widgets/logo.dart';
 import 'package:guard_app/widgets/text_input.dart';
@@ -17,24 +18,19 @@ class LoginPage extends StatefulHookConsumerWidget {
 
 class _LoginPageState extends ConsumerState<LoginPage> {
   @override
-  void initState() {
-    ref.read(authProvider.notifier).tryAutoLogin().then((value) {
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
-        if (value) context.beamToNamed("/locSharing");
-      });
-    });
-
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      if (previous!.token != null && pre) {
+        if (mounted) context.beamToNamed("/locSharing");
+      }
+    });
     final usernameController = useTextEditingController();
     final passwordController = useTextEditingController();
     final usernameFocusNode = useFocusNode();
     final passwordFocusNode = useFocusNode();
 
     final useAuth = ref.watch(authProvider);
+    ref.watch(authProvider.notifier);
     final mediaQuery = MediaQuery.of(context);
 
     return Scaffold(
@@ -94,7 +90,7 @@ Please log in to continue''',
                           text: "Password",
                           nextFocus: (string) {
                             login(usernameController.text,
-                                passwordController.text, ref);
+                                passwordController.text, ref, context);
                           },
                         ),
                         if (useAuth.errorState != null)
@@ -159,7 +155,7 @@ Please log in to continue''',
                                 ),
                                 onPressed: () {
                                   login(usernameController.text,
-                                      passwordController.text, ref);
+                                      passwordController.text, ref, context);
                                 },
                                 label: Text(
                                   "Log In",
@@ -189,17 +185,18 @@ Please log in to continue''',
       ),
     );
   }
-}
 
-void login(String usr, String psw, WidgetRef ref) async {
-  final bool resLogin;
-  try {
-    resLogin = await ref.read(authProvider.notifier).signIn(usr, psw);
-  } catch (e) {
-    return;
-  }
+  void login(String usr, String psw, WidgetRef ref, BuildContext ctx) async {
+    final bool resLogin;
+    try {
+      resLogin = await ref.read(authProvider.notifier).signIn(usr, psw);
+    } catch (e) {
+      return;
+    }
 
-  if (resLogin & ref.read(authProvider.notifier).isAuth) {
-    await ref.read(accountProvider.notifier).getMe();
+    if (resLogin & ref.read(authProvider.notifier).isAuth) {
+      final account = await ref.read(accountProvider.notifier).getMe();
+      if (account?.id != null) Beamer.of(ctx).beamToNamed('/locSharing');
+    }
   }
 }

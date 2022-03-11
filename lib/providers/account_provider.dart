@@ -64,7 +64,7 @@ class AccountProvider extends StateNotifier<AccountState> {
             yardId: resData["yard_id"],
           );
         }
-        print(state.account);
+
         return state.account;
       } catch (e) {
         /*print("Trying to reconnet");
