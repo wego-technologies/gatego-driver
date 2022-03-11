@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:guard_app/providers/providers.dart';
 import 'package:guard_app/utils/string_to_role.dart';
 import 'package:http/http.dart' as http;

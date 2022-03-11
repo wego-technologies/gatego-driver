@@ -79,6 +79,9 @@ class Auth extends StateNotifier<AuthState> {
     if (isAuth) {
       return true;
     }
+    if (state.isAuthing) {
+      return false;
+    }
 
     state.isAuthing = true;
 
