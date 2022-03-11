@@ -88,6 +88,7 @@ class LocationProvider extends StateNotifier<LocationState> {
   final Ref ref;
 
   ReceivePort port = ReceivePort();
+  StreamController controller = StreamController();
 
   Future<bool> checkPremission() async {
     try {
@@ -137,20 +138,30 @@ class LocationProvider extends StateNotifier<LocationState> {
         ),
       ),
     );
+    state = state.copyWith(isLocating: true);
   }
 
   Future<void> initializeTracking() async {
-    IsolateNameServer.registerPortWithName(port.sendPort, isolateName);
-    port.listen(handlLocationUpdates);
-    await BackgroundLocator.initialize();
-    final isTracking = await BackgroundLocator.isRegisterLocationUpdate();
-    state = state.copyWith(isLocating: isTracking);
+    final isRegistered = await BackgroundLocator.isRegisterLocationUpdate();
+    final isServiceRunning = await BackgroundLocator.isServiceRunning();
+
+    if (!(isRegistered && isServiceRunning)) {
+      IsolateNameServer.registerPortWithName(port.sendPort, isolateName);
+      try {
+        port.listen(handlLocationUpdates);
+      } catch (_) {
+        print("tried to relisten");
+      }
+      await BackgroundLocator.initialize();
+    }
+
+    state = state.copyWith(isLocating: isRegistered && isServiceRunning);
   }
 
   Future<void> stopAndDispose() async {
     IsolateNameServer.removePortNameMapping(isolateName);
     await BackgroundLocator.unRegisterLocationUpdate();
-    //state = state.copyWith(isLocating: false);
+    state = state.copyWith(isLocating: false);
   }
 
   void handlLocationUpdates(dynamic data) {
@@ -178,4 +189,7 @@ void initCallback(Map<String, dynamic>? data) {
 
 void disposedCallback() {
   print('Disposed');
+
+  const apiHereKey = "-ZxMvdMIBcgHopigc15uxqXOmYal-1fP7Q-dFT-5g98";
+  const appHereId = "wnsjv5V5W9zcwGSajCjN";
 }
