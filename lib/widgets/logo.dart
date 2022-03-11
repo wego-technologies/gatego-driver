@@ -4,9 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 class Logo extends StatelessWidget {
   final double width;
 
-  const Logo({
-    this.width = 200,
-  });
+  const Logo({this.width = 200, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
