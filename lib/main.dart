@@ -4,10 +4,12 @@ import 'package:guard_app/screens/login.dart';
 import 'package:guard_app/screens/loc_sharing.dart';
 import 'package:guard_app/theme/dark_theme.dart';
 import 'package:guard_app/theme/light_theme.dart';
+import 'package:here_sdk/core.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:beamer/beamer.dart';
 
 void main() {
+  SdkContext.init(IsolateOrigin.main);
   runApp(const MyApp());
 }
 

@@ -44,6 +44,8 @@ dependencies:
   background_locator: ^1.6.12
   permission_handler: ^9.2.0
 
+  here_sdk:
+    path: plugins/here_sdk
 
 dev_dependencies:
   flutter_test:

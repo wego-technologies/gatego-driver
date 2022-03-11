@@ -1,7 +1,10 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
+import 'package:guard_app/providers/location_provider.dart';
 import 'package:guard_app/providers/providers.dart';
 import 'package:guard_app/widgets/logo.dart';
+import 'package:here_sdk/core.dart';
+import 'package:here_sdk/mapview.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class LocSharingPage extends StatefulHookConsumerWidget {
@@ -26,6 +29,9 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
     final locationStateNotifier = ref.watch(locationProvider.notifier);
     final accountProv = ref.watch(accountProvider).account;
     final authProv = ref.watch(authProvider.notifier);
+    ref.listen<GeoCoordinates?>(hereGeoCoords, (previous, next) {
+      print("hello");
+    });
 
     return Scaffold(
       body: SafeArea(
@@ -35,6 +41,13 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
           child: Stack(
             alignment: Alignment.topCenter,
             children: [
+              Positioned(
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: HereMap(onMapCreated: _onMapCreated),
+              ),
               Card(
                 margin: const EdgeInsets.all(15),
                 child: SizedBox(
@@ -98,20 +111,21 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
                                 .copyWith(fontSize: 20),
                           ),
                           OutlinedButton.icon(
-                              onPressed: () async {
-                                if (locationState.isLocating) {
-                                  locationStateNotifier.stopAndDispose();
-                                } else {
-                                  await locationStateNotifier
-                                      .initializeTracking();
-                                  locationStateNotifier.beginTracking();
-                                }
-                              },
-                              icon: Icon(locationState.isLocating
-                                  ? Icons.stop_rounded
-                                  : Icons.play_arrow_rounded),
-                              label: Text(
-                                  locationState.isLocating ? "Stop" : "Start")),
+                            onPressed: () async {
+                              if (locationState.isLocating) {
+                                locationStateNotifier.stopAndDispose();
+                              } else {
+                                await locationStateNotifier
+                                    .initializeTracking();
+                                locationStateNotifier.beginTracking();
+                              }
+                            },
+                            icon: Icon(locationState.isLocating
+                                ? Icons.stop_rounded
+                                : Icons.play_arrow_rounded),
+                            label: Text(
+                                locationState.isLocating ? "Stop" : "Start"),
+                          ),
                         ],
                       ),
                     ),
@@ -123,6 +137,30 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
         ),
       ),
     );
+  }
+
+  void _onMapCreated(HereMapController hereMapController) {
+    hereMapController.mapScene.loadSceneForMapScheme(
+        Theme.of(context).brightness == Brightness.light
+            ? MapScheme.normalDay
+            : MapScheme.normalNight, (MapError? error) {
+      if (error != null) {
+        print('Map scene not loaded. MapError: ${error.toString()}');
+        return;
+      }
+
+      const double distanceToEarthInMeters = 8000;
+      hereMapController.camera.lookAtPointWithDistance(
+          GeoCoordinates(52.530932, 13.384915), distanceToEarthInMeters);
+      hereMapController.setWatermarkPosition(
+          WatermarkPlacement.bottomCenter, 10);
+      ref.listen<GeoCoordinates?>(hereGeoCoords, (previous, next) {
+        print("hello");
+        if (next != null) {
+          hereMapController.camera.flyTo(next);
+        }
+      });
+    });
   }
 }
 

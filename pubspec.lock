@@ -128,6 +128,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  here_sdk:
+    dependency: "direct main"
+    description:
+      path: "plugins/here_sdk"
+      relative: true
+    source: path
+    version: "4.10.4"
   hooks_riverpod:
     dependency: "direct main"
     description:
@@ -149,6 +156,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0"
+  intl:
+    dependency: transitive
+    description:
+      name: intl
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.17.0"
   js:
     dependency: transitive
     description:

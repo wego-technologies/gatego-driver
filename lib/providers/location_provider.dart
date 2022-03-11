@@ -9,30 +9,37 @@ import 'package:background_locator/settings/android_settings.dart';
 import 'package:background_locator/settings/ios_settings.dart';
 import 'package:background_locator/settings/locator_settings.dart';
 import 'package:flutter/material.dart';
+import 'package:here_sdk/core.dart';
+import 'package:here_sdk/mapview.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:riverpod/riverpod.dart';
+
+import 'package:guard_app/providers/providers.dart';
 
 class LocationState {
   bool isLocating;
   bool isPermissionGranted;
   bool isAwaitingPermissions;
+  GeoCoordinates? latestCoordinates;
 
-  LocationState({
-    required this.isLocating,
-    required this.isPermissionGranted,
-    required this.isAwaitingPermissions,
-  });
+  LocationState(
+      {required this.isLocating,
+      required this.isPermissionGranted,
+      required this.isAwaitingPermissions,
+      this.latestCoordinates});
 
   LocationState copyWith({
     bool? isLocating,
     bool? isPermissionGranted,
     bool? isAwaitingPermissions,
+    GeoCoordinates? latestCoordinates,
   }) {
     return LocationState(
       isLocating: isLocating ?? this.isLocating,
       isPermissionGranted: isPermissionGranted ?? this.isPermissionGranted,
       isAwaitingPermissions:
           isAwaitingPermissions ?? this.isAwaitingPermissions,
+      latestCoordinates: latestCoordinates ?? this.latestCoordinates,
     );
   }
 
@@ -41,6 +48,8 @@ class LocationState {
       'isLocating': isLocating,
       'isPermissionGranted': isPermissionGranted,
       'isAwaitingPermissions': isAwaitingPermissions,
+      'latestCoordinates':
+          "${latestCoordinates?.latitude}, ${latestCoordinates?.longitude}, ${latestCoordinates?.altitude}",
     };
   }
 
@@ -49,6 +58,7 @@ class LocationState {
       isLocating: map['isLocating'] ?? false,
       isPermissionGranted: map['isPermissionGranted'] ?? false,
       isAwaitingPermissions: map['isAwaitingPermissions'] ?? false,
+      //latestCoordinates: map['latestCoordinates'] != null ? GeoCoordinates.fromMap(map['latestCoordinates']) : null,
     );
   }
 
@@ -58,8 +68,9 @@ class LocationState {
       LocationState.fromMap(json.decode(source));
 
   @override
-  String toString() =>
-      'LocationState(isLocating: $isLocating, isPermissionGranted: $isPermissionGranted, isAwaitingPermissions: $isAwaitingPermissions)';
+  String toString() {
+    return 'LocationState(isLocating: $isLocating, isPermissionGranted: $isPermissionGranted, isAwaitingPermissions: $isAwaitingPermissions, latestCoordinates: $latestCoordinates)';
+  }
 
   @override
   bool operator ==(Object other) {
@@ -68,14 +79,17 @@ class LocationState {
     return other is LocationState &&
         other.isLocating == isLocating &&
         other.isPermissionGranted == isPermissionGranted &&
-        other.isAwaitingPermissions == isAwaitingPermissions;
+        other.isAwaitingPermissions == isAwaitingPermissions &&
+        other.latestCoordinates == latestCoordinates;
   }
 
   @override
-  int get hashCode =>
-      isLocating.hashCode ^
-      isPermissionGranted.hashCode ^
-      isAwaitingPermissions.hashCode;
+  int get hashCode {
+    return isLocating.hashCode ^
+        isPermissionGranted.hashCode ^
+        isAwaitingPermissions.hashCode ^
+        latestCoordinates.hashCode;
+  }
 }
 
 class LocationProvider extends StateNotifier<LocationState> {
@@ -141,19 +155,16 @@ class LocationProvider extends StateNotifier<LocationState> {
     state = state.copyWith(isLocating: true);
   }
 
+  voidf 
+
   Future<void> initializeTracking() async {
     final isRegistered = await BackgroundLocator.isRegisterLocationUpdate();
     final isServiceRunning = await BackgroundLocator.isServiceRunning();
 
     if (!(isRegistered && isServiceRunning)) {
       IsolateNameServer.registerPortWithName(port.sendPort, isolateName);
-      try {
-        port.listen(handlLocationUpdates);
-      } catch (_) {
-        print("tried to relisten");
-      }
-      await BackgroundLocator.initialize();
     }
+    await BackgroundLocator.initialize();
 
     state = state.copyWith(isLocating: isRegistered && isServiceRunning);
   }
@@ -161,12 +172,15 @@ class LocationProvider extends StateNotifier<LocationState> {
   Future<void> stopAndDispose() async {
     IsolateNameServer.removePortNameMapping(isolateName);
     await BackgroundLocator.unRegisterLocationUpdate();
+    port.close();
     state = state.copyWith(isLocating: false);
   }
 
   void handlLocationUpdates(dynamic data) {
     final locationData = data as LocationDto;
     print(locationData);
+    ref.read(hereGeoCoords.state).state =
+        GeoCoordinates(locationData.latitude, locationData.longitude);
   }
 
   static const String isolateName = "LocatorIsolate";
@@ -176,6 +190,7 @@ void callback(LocationDto locationDto) async {
   final SendPort? send =
       IsolateNameServer.lookupPortByName(LocationProvider.isolateName);
   send?.send(locationDto);
+  print(locationDto);
 }
 
 //Optional
@@ -189,7 +204,4 @@ void initCallback(Map<String, dynamic>? data) {
 
 void disposedCallback() {
   print('Disposed');
-
-  const apiHereKey = "-ZxMvdMIBcgHopigc15uxqXOmYal-1fP7Q-dFT-5g98";
-  const appHereId = "wnsjv5V5W9zcwGSajCjN";
 }
