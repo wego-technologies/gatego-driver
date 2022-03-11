@@ -1,8 +1,8 @@
+import 'package:background_location/background_location.dart';
 import 'package:guard_app/providers/account_provider.dart';
 import 'package:guard_app/providers/auth_provider.dart';
 import 'package:guard_app/providers/location_provider.dart';
-import 'package:here_sdk/core.dart';
-import 'package:here_sdk/mapview.dart';
+import 'package:here_sdk/mapview.dart' as here;
 import 'package:riverpod/riverpod.dart';
 
 final authProvider = StateNotifierProvider<Auth, AuthState>((ref) {
@@ -19,10 +19,10 @@ final locationProvider =
   return LocationProvider(ref);
 });
 
-final hereGeoCoords = StateProvider<GeoCoordinates?>(
+final hereGeoCoords = StateProvider<Location?>(
   (ref) => null,
 );
 
-final hereController = StateProvider<HereMapController?>(
+final hereController = StateProvider<here.HereMapController?>(
   (ref) => null,
 );

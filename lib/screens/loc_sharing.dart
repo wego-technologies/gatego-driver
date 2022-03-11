@@ -4,8 +4,10 @@ import 'package:guard_app/providers/providers.dart';
 import 'package:guard_app/widgets/logo.dart';
 import 'package:here_sdk/core.dart';
 import 'package:here_sdk/core.errors.dart';
+import 'package:here_sdk/gestures.dart';
 import 'package:here_sdk/mapview.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:background_location/background_location.dart' as bgLoc;
 
 class LocSharingPage extends StatefulHookConsumerWidget {
   const LocSharingPage({Key? key}) : super(key: key);
@@ -26,8 +28,8 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
   List<GeoCoordinates> lines = [];
   GeoPolyline? geoPolyline;
   MapPolyline? mapPolyline;
-  MapPolygon? mapCircleOutline;
-  MapPolygon? mapCircle;
+  LocationIndicator? locIndicator;
+  bool shouldfly = true;
 
   @override
   Widget build(BuildContext context) {
@@ -36,18 +38,40 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
     final accountProv = ref.watch(accountProvider).account;
     final authProv = ref.watch(authProvider.notifier);
 
-    ref.listen<GeoCoordinates?>(hereGeoCoords, (previous, next) {
+    locIndicator ??= LocationIndicator();
+
+    ref.listen<bgLoc.Location?>(hereGeoCoords, (previous, next) {
       final controller = ref.read(hereController);
 
       if (controller != null) {
-        if (previous == null || next!.distanceTo(previous) > 1) {
-          if (previous == null) {
-            controller.camera.lookAtPointWithDistance(next!, 1500);
-          } else {
-            controller.camera.flyToWithOptionsAndDistance(
-                next!, 1500, MapCameraFlyToOptions.withDefaults());
+        final nextCoordinate = GeoCoordinates(next!.latitude!, next.longitude!);
+
+        if (previous == null) {}
+        final previousCoordinate = previous == null
+            ? null
+            : GeoCoordinates(previous.latitude!, previous.longitude!);
+
+        Location loc = Location.withCoordinates(nextCoordinate);
+        loc.time = DateTime.now();
+        loc.bearingInDegrees = next.bearing;
+
+        locIndicator?.updateLocation(loc);
+        controller.addLifecycleListener(locIndicator!);
+
+        if (previousCoordinate == null ||
+            nextCoordinate.distanceTo(previousCoordinate) > 1) {
+          if (shouldfly) {
+            if (previousCoordinate == null) {
+              controller.camera.lookAtPointWithDistance(nextCoordinate, 1500);
+            } else {
+              controller.camera.flyToWithOptionsAndGeoOrientationAndDistance(
+                  nextCoordinate,
+                  GeoOrientationUpdate(loc.bearingInDegrees, 60),
+                  1500,
+                  MapCameraFlyToOptions.withDefaults());
+            }
           }
-          lines.add(next);
+          lines.add(nextCoordinate);
           if (lines.length > 1000) {
             lines.removeAt(0);
           }
@@ -61,17 +85,6 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
             mapScene.removeMapPolyline(mapPolyline!);
           }
           mapPolyline = mapPolylineNew;
-
-          if (mapCircle != null) {
-            mapScene.removeMapPolygon(mapCircle!);
-            mapScene.removeMapPolygon(mapCircleOutline!);
-          }
-          final mapCircleOutlineNew = _createMapCircle(50, next, context, 0.2);
-          final mapCircleNew = _createMapCircle(10, next, context, 1);
-          mapScene.addMapPolygon(mapCircleNew);
-          mapScene.addMapPolygon(mapCircleOutlineNew);
-          mapCircle = mapCircleNew;
-          mapCircleOutline = mapCircleOutlineNew;
         }
       }
     });
@@ -95,6 +108,30 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
                 right: 0,
                 child: HereMap(onMapCreated: _onMapCreated),
               ),
+              if (!shouldfly && locationState.isLocating)
+                Positioned(
+                  bottom: 90,
+                  right: 20,
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      shouldfly = true;
+                      final locRaw = ref.read(hereGeoCoords);
+                      final loc =
+                          GeoCoordinates(locRaw!.latitude!, locRaw.longitude!);
+                      ref
+                          .read(hereController.state)
+                          .state!
+                          .camera
+                          .flyToWithOptionsAndGeoOrientationAndDistance(
+                              loc,
+                              GeoOrientationUpdate(locRaw.bearing, 60),
+                              1500,
+                              MapCameraFlyToOptions.withDefaults());
+                      setState(() {});
+                    },
+                    child: const Icon(Icons.my_location_rounded),
+                  ),
+                ),
               Card(
                 margin: const EdgeInsets.all(15),
                 child: SizedBox(
@@ -187,16 +224,55 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
         return;
       }
 
-      const double distanceToEarthInMeters = 8000;
-      hereMapController.camera.lookAtPointWithDistance(
-          GeoCoordinates(52.530932, 13.384915), distanceToEarthInMeters);
-      hereMapController.setWatermarkPosition(
-          WatermarkPlacement.bottomCenter, 10);
       hereMapController.mapScene.setLayerVisibility(
           MapSceneLayers.trafficFlow, VisibilityState.visible);
       // MapSceneLayers.trafficIncidents renders traffic icons and lines to indicate the location of incidents. Note that these are not directly pickable yet.
       hereMapController.mapScene.setLayerVisibility(
           MapSceneLayers.trafficIncidents, VisibilityState.visible);
+
+      /*hereMapController.gestures.disableDefaultAction(GestureType.twoFingerTap);
+      hereMapController.gestures.disableDefaultAction(GestureType.doubleTap);
+      hereMapController.gestures.disableDefaultAction(GestureType.pan);
+      hereMapController.gestures.disableDefaultAction(GestureType.pinchRotate);
+      hereMapController.gestures.disableDefaultAction(GestureType.twoFingerPan);
+      hereMapController.gestures.disableDefaultAction(GestureType.twoFingerTap);*/
+
+      hereMapController.gestures.panListener = PanListener((p0, p1, p2, p3) {
+        if (mounted && shouldfly) {
+          setState(() {
+            shouldfly = false;
+          });
+        }
+      });
+      hereMapController.gestures.doubleTapListener = DoubleTapListener((p0) {
+        if (mounted && shouldfly) {
+          setState(() {
+            shouldfly = false;
+          });
+        }
+      });
+      hereMapController.gestures.pinchRotateListener =
+          PinchRotateListener((p0, p1, p2, p3, p4) {
+        if (mounted && shouldfly) {
+          setState(() {
+            shouldfly = false;
+          });
+        }
+      });
+      hereMapController.gestures.twoFingerPanListener =
+          TwoFingerPanListener((p0, p1, p2, p3) {
+        if (mounted && shouldfly) {
+          setState(() {
+            shouldfly = false;
+          });
+        }
+      });
+
+      const double distanceToEarthInMeters = 8000;
+      hereMapController.camera.lookAtPointWithDistance(
+          GeoCoordinates(52.530932, 13.384915), distanceToEarthInMeters);
+      hereMapController.setWatermarkPosition(
+          WatermarkPlacement.bottomCenter, 10);
 
       ref.read(hereController.state).state = hereMapController;
     });
