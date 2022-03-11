@@ -17,10 +17,12 @@ class LoginPage extends StatefulHookConsumerWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
+  var isLoginButton = false;
+
   @override
   Widget build(BuildContext context) {
     ref.listen<AuthState>(authProvider, (previous, next) {
-      if (previous!.token != null && pre) {
+      if (previous!.token != null && !isLoginButton) {
         if (mounted) context.beamToNamed("/locSharing");
       }
     });
@@ -154,6 +156,8 @@ Please log in to continue''',
                                   ),
                                 ),
                                 onPressed: () {
+                                  isLoginButton = true;
+
                                   login(usernameController.text,
                                       passwordController.text, ref, context);
                                 },
