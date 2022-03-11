@@ -76,6 +76,10 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
       }
     });
 
+    if (accountProv == null) {
+      WidgetsBinding.instance?.addPostFrameCallback((_) => setState(() {}));
+    }
+
     return Scaffold(
       body: SafeArea(
         child: SizedBox(
@@ -111,19 +115,13 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
                             const SizedBox(
                               width: 10,
                             ),
-                            Text(
-                              accountProv?.name ?? "No Name",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(fontSize: 20),
-                            ),
                             IconButton(
-                                onPressed: () async {
-                                  await authProv.logout();
-                                  Beamer.of(context).beamToNamed('/login');
-                                },
-                                icon: const Icon(Icons.logout))
+                              onPressed: () async {
+                                await authProv.logout();
+                                Beamer.of(context).beamToNamed('/login');
+                              },
+                              icon: const Icon(Icons.logout),
+                            )
                           ],
                         ),
                       ],
