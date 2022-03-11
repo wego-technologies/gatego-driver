@@ -1,16 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:isolate';
-import 'dart:ui';
 
-import 'package:background_locator/background_locator.dart';
-import 'package:background_locator/location_dto.dart';
-import 'package:background_locator/settings/android_settings.dart';
-import 'package:background_locator/settings/ios_settings.dart';
-import 'package:background_locator/settings/locator_settings.dart';
-import 'package:flutter/material.dart';
+import 'package:background_location/background_location.dart';
 import 'package:here_sdk/core.dart';
-import 'package:here_sdk/mapview.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -126,82 +119,21 @@ class LocationProvider extends StateNotifier<LocationState> {
     openAppSettings();
   }
 
-  void beginTracking() {
+  Future<void> beginTracking() async {
     if (state.isLocating) return;
-    BackgroundLocator.registerLocationUpdate(
-      callback,
-      initCallback: initCallback,
-      initDataCallback: {},
-      disposeCallback: disposedCallback,
-      autoStop: false,
-      iosSettings: const IOSSettings(
-          accuracy: LocationAccuracy.NAVIGATION, distanceFilter: 0),
-      androidSettings: const AndroidSettings(
-        accuracy: LocationAccuracy.NAVIGATION,
-        interval: 5,
-        distanceFilter: 0,
-        androidNotificationSettings: AndroidNotificationSettings(
-          notificationChannelName: 'Location tracking',
-          notificationTitle: 'Gatego Tracking',
-          notificationMsg: 'Gatego is tracking your location',
-          notificationBigMsg:
-              'Background location is on to keep the gatego up-tp-date with your location. Click here to open the app and stop the tracking.',
-          notificationIcon: '',
-          notificationIconColor: Colors.grey,
-          notificationTapCallback: notificationCallback,
-        ),
-      ),
-    );
+    BackgroundLocation.startLocationService();
     state = state.copyWith(isLocating: true);
-  }
 
-  voidf 
-
-  Future<void> initializeTracking() async {
-    final isRegistered = await BackgroundLocator.isRegisterLocationUpdate();
-    final isServiceRunning = await BackgroundLocator.isServiceRunning();
-
-    if (!(isRegistered && isServiceRunning)) {
-      IsolateNameServer.registerPortWithName(port.sendPort, isolateName);
-    }
-    await BackgroundLocator.initialize();
-
-    state = state.copyWith(isLocating: isRegistered && isServiceRunning);
+    BackgroundLocation.getLocationUpdates((location) {
+      ref.read(hereGeoCoords.state).state = GeoCoordinates.withAltitude(
+          location.latitude!, location.longitude!, location.altitude!);
+    });
   }
 
   Future<void> stopAndDispose() async {
-    IsolateNameServer.removePortNameMapping(isolateName);
-    await BackgroundLocator.unRegisterLocationUpdate();
-    port.close();
+    BackgroundLocation.stopLocationService();
     state = state.copyWith(isLocating: false);
   }
 
-  void handlLocationUpdates(dynamic data) {
-    final locationData = data as LocationDto;
-    print(locationData);
-    ref.read(hereGeoCoords.state).state =
-        GeoCoordinates(locationData.latitude, locationData.longitude);
-  }
-
   static const String isolateName = "LocatorIsolate";
-}
-
-void callback(LocationDto locationDto) async {
-  final SendPort? send =
-      IsolateNameServer.lookupPortByName(LocationProvider.isolateName);
-  send?.send(locationDto);
-  print(locationDto);
-}
-
-//Optional
-void notificationCallback() {
-  print('User clicked on the notification');
-}
-
-void initCallback(Map<String, dynamic>? data) {
-  print('Initialized');
-}
-
-void disposedCallback() {
-  print('Disposed');
 }

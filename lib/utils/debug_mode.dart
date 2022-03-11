@@ -6,7 +6,7 @@ class DebugUtils {
     if (_inDebugMode) {
       return "https://api-dev.gatego.io/";
     } else {
-      return "https://cloud.gatego.io/";
+      return "https://api.gatego.io/";
     }
   }
 }

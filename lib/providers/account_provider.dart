@@ -21,8 +21,8 @@ class AccountProvider extends StateNotifier<AccountState> {
   AccountProvider(this.ref) : super(AccountState(null));
   final Ref ref;
 
-  Future<Account?> getMe() async {
-    final token = ref.read(authProvider).token;
+  Future<Account?> getMe({String? token}) async {
+    token ??= ref.read(authProvider).token;
 
     /*if (retryTimer != null) {
       retryTimer.cancel();
@@ -49,7 +49,7 @@ class AccountProvider extends StateNotifier<AccountState> {
             _deletedAt = DateTime.tryParse(resData["deleted_at"]);
           }
 
-          state.account = Account(
+          state = AccountState(Account(
             active: resData["active"],
             canViewCarrierIds: resData["can_view_carrier_ids"],
             role: stringToRole(resData["role"]),
@@ -62,7 +62,7 @@ class AccountProvider extends StateNotifier<AccountState> {
             organization: Organization.fromMap(resData["organization"]),
             phoneNumber: resData["phone_number"],
             yardId: resData["yard_id"],
-          );
+          ));
         }
 
         return state.account;

@@ -114,10 +114,12 @@ Please log in to continue''',
                                   const SizedBox(
                                     width: 10,
                                   ),
-                                  Text(
-                                    useAuth.errorState!,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                  Expanded(
+                                    child: Text(
+                                      useAuth.errorState!,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ],
                               ),

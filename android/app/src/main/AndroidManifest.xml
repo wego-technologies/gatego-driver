@@ -17,8 +17,6 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
-    <service android:name="rekab.app.background_locator.IsolateHolderService" android:permission="android.permission.FOREGROUND_SERVICE" android:exported="true"
-            android:foregroundServiceType = "location"/>
 
     <meta-data android:name="flutterEmbedding" android:value="2" />
 
@@ -26,10 +24,11 @@
     <meta-data android:name="com.here.sdk.access_key_secret" android:value="Wp3R0zXpQvDRN9GOPNDVE0TqY8OduNQieVfGu2xP_XnYOsSnGusE4xI1DqjZ0fjj0NK4u8hY2BGVFj2VmS_G5g"/>
   </application>
 
-  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-  <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-  <uses-permission android:name="android.permission.WAKE_LOCK"/>
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+  <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+  <uses-permission android:name="android.permission.INTERNET"/>
 
 
 </manifest>
