@@ -4,6 +4,10 @@ ThemeData darkTheme() {
   return ThemeData.dark().copyWith(
     primaryColor: const Color(0xff00a1d3),
     toggleableActiveColor: const Color(0xff00a1d3),
+    colorScheme: ColorScheme.fromSeed(
+        seedColor: const Color(0xff00a1d3), brightness: Brightness.dark),
+    floatingActionButtonTheme:
+        const FloatingActionButtonThemeData(backgroundColor: Color(0xff00a1d3)),
     textTheme: const TextTheme(
       headline1: TextStyle(
         fontSize: 30,

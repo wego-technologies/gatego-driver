@@ -1,13 +1,13 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
-import 'package:guard_app/providers/providers.dart';
-import 'package:guard_app/widgets/logo.dart';
+import 'package:gatego_smartloc/providers/providers.dart';
+import 'package:gatego_smartloc/widgets/logo.dart';
 import 'package:here_sdk/core.dart';
 import 'package:here_sdk/core.errors.dart';
 import 'package:here_sdk/gestures.dart';
 import 'package:here_sdk/mapview.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:background_location/background_location.dart' as bgLoc;
+import 'package:background_location/background_location.dart' as bg_loc;
 
 class LocSharingPage extends StatefulHookConsumerWidget {
   const LocSharingPage({Key? key}) : super(key: key);
@@ -40,7 +40,7 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
 
     locIndicator ??= LocationIndicator();
 
-    ref.listen<bgLoc.Location?>(hereGeoCoords, (previous, next) {
+    ref.listen<bg_loc.Location?>(hereGeoCoords, (previous, next) {
       final controller = ref.read(hereController);
 
       if (controller != null) {
@@ -225,10 +225,10 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
       }
 
       hereMapController.mapScene.setLayerVisibility(
-          MapSceneLayers.trafficFlow, VisibilityState.visible);
+          MapSceneLayers.trafficIncidents, VisibilityState.visible);
       // MapSceneLayers.trafficIncidents renders traffic icons and lines to indicate the location of incidents. Note that these are not directly pickable yet.
       hereMapController.mapScene.setLayerVisibility(
-          MapSceneLayers.trafficIncidents, VisibilityState.visible);
+          MapSceneLayers.trafficFlow, VisibilityState.visible);
 
       /*hereMapController.gestures.disableDefaultAction(GestureType.twoFingerTap);
       hereMapController.gestures.disableDefaultAction(GestureType.doubleTap);
@@ -282,17 +282,6 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
 String getInitials(String? name) => name?.isNotEmpty ?? false
     ? name!.trim().split(RegExp(' +')).map((s) => s[0]).take(2).join()
     : 'NN';
-
-MapPolygon _createMapCircle(double radius, GeoCoordinates coordinates,
-    BuildContext context, double opacity) {
-  GeoCircle geoCircle = GeoCircle(coordinates, radius);
-
-  GeoPolygon geoPolygon = GeoPolygon.withGeoCircle(geoCircle);
-  Color fillColor = Theme.of(context).primaryColor.withOpacity(opacity);
-  MapPolygon mapPolygon = MapPolygon(geoPolygon, fillColor);
-
-  return mapPolygon;
-}
 
 MapPolyline? createPolyline(
   List<GeoCoordinates> coordinates,
