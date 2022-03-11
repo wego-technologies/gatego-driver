@@ -22,3 +22,7 @@ final locationProvider =
 final hereGeoCoords = StateProvider<GeoCoordinates?>(
   (ref) => null,
 );
+
+final hereController = StateProvider<HereMapController?>(
+  (ref) => null,
+);

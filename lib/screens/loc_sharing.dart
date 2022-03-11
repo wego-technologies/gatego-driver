@@ -1,9 +1,9 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
-import 'package:guard_app/providers/location_provider.dart';
 import 'package:guard_app/providers/providers.dart';
 import 'package:guard_app/widgets/logo.dart';
 import 'package:here_sdk/core.dart';
+import 'package:here_sdk/core.errors.dart';
 import 'package:here_sdk/mapview.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -23,14 +23,57 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
     super.initState();
   }
 
+  List<GeoCoordinates> lines = [];
+  GeoPolyline? geoPolyline;
+  MapPolyline? mapPolyline;
+  MapPolygon? mapCircleOutline;
+  MapPolygon? mapCircle;
+
   @override
   Widget build(BuildContext context) {
     final locationState = ref.watch(locationProvider);
     final locationStateNotifier = ref.watch(locationProvider.notifier);
     final accountProv = ref.watch(accountProvider).account;
     final authProv = ref.watch(authProvider.notifier);
+
     ref.listen<GeoCoordinates?>(hereGeoCoords, (previous, next) {
-      print("hello");
+      final controller = ref.read(hereController);
+
+      if (controller != null) {
+        if (previous == null || next!.distanceTo(previous) > 1) {
+          if (previous == null) {
+            controller.camera.lookAtPointWithDistance(next!, 1500);
+          } else {
+            controller.camera.flyToWithOptionsAndDistance(
+                next!, 1500, MapCameraFlyToOptions.withDefaults());
+          }
+          lines.add(next);
+          if (lines.length > 1000) {
+            lines.removeAt(0);
+          }
+          final mapScene = controller.mapScene;
+
+          final mapPolylineNew = createPolyline(lines, context);
+          if (mapPolylineNew != null) {
+            mapScene.addMapPolyline(mapPolylineNew);
+          }
+          if (mapPolyline != null) {
+            mapScene.removeMapPolyline(mapPolyline!);
+          }
+          mapPolyline = mapPolylineNew;
+
+          if (mapCircle != null) {
+            mapScene.removeMapPolygon(mapCircle!);
+            mapScene.removeMapPolygon(mapCircleOutline!);
+          }
+          final mapCircleOutlineNew = _createMapCircle(50, next, context, 0.2);
+          final mapCircleNew = _createMapCircle(10, next, context, 1);
+          mapScene.addMapPolygon(mapCircleNew);
+          mapScene.addMapPolygon(mapCircleOutlineNew);
+          mapCircle = mapCircleNew;
+          mapCircleOutline = mapCircleOutlineNew;
+        }
+      }
     });
 
     return Scaffold(
@@ -115,9 +158,7 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
                               if (locationState.isLocating) {
                                 locationStateNotifier.stopAndDispose();
                               } else {
-                                await locationStateNotifier
-                                    .initializeTracking();
-                                locationStateNotifier.beginTracking();
+                                await locationStateNotifier.beginTracking();
                               }
                             },
                             icon: Icon(locationState.isLocating
@@ -145,7 +186,6 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
             ? MapScheme.normalDay
             : MapScheme.normalNight, (MapError? error) {
       if (error != null) {
-        print('Map scene not loaded. MapError: ${error.toString()}');
         return;
       }
 
@@ -154,12 +194,13 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
           GeoCoordinates(52.530932, 13.384915), distanceToEarthInMeters);
       hereMapController.setWatermarkPosition(
           WatermarkPlacement.bottomCenter, 10);
-      ref.listen<GeoCoordinates?>(hereGeoCoords, (previous, next) {
-        print("hello");
-        if (next != null) {
-          hereMapController.camera.flyTo(next);
-        }
-      });
+      hereMapController.mapScene.setLayerVisibility(
+          MapSceneLayers.trafficFlow, VisibilityState.visible);
+      // MapSceneLayers.trafficIncidents renders traffic icons and lines to indicate the location of incidents. Note that these are not directly pickable yet.
+      hereMapController.mapScene.setLayerVisibility(
+          MapSceneLayers.trafficIncidents, VisibilityState.visible);
+
+      ref.read(hereController.state).state = hereMapController;
     });
   }
 }
@@ -167,3 +208,33 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
 String getInitials(String? name) => name?.isNotEmpty ?? false
     ? name!.trim().split(RegExp(' +')).map((s) => s[0]).take(2).join()
     : 'NN';
+
+MapPolygon _createMapCircle(double radius, GeoCoordinates coordinates,
+    BuildContext context, double opacity) {
+  GeoCircle geoCircle = GeoCircle(coordinates, radius);
+
+  GeoPolygon geoPolygon = GeoPolygon.withGeoCircle(geoCircle);
+  Color fillColor = Theme.of(context).primaryColor.withOpacity(opacity);
+  MapPolygon mapPolygon = MapPolygon(geoPolygon, fillColor);
+
+  return mapPolygon;
+}
+
+MapPolyline? createPolyline(
+  List<GeoCoordinates> coordinates,
+  BuildContext context,
+) {
+  GeoPolyline geoPolyline;
+  try {
+    geoPolyline = GeoPolyline(coordinates);
+  } on InstantiationException {
+    // Thrown when less than two vertices.
+    return null;
+  }
+
+  double widthInPixels = 20;
+  Color lineColor = Theme.of(context).primaryColor;
+  MapPolyline mapPolyline = MapPolyline(geoPolyline, widthInPixels, lineColor);
+
+  return mapPolyline;
+}

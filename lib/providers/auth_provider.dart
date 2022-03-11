@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:guard_app/providers/providers.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -102,14 +101,15 @@ class Auth extends StateNotifier<AuthState> {
     _expiryDate = expiryDate;
     notifyListeners();*/
 
+    await ref
+        .read(accountProvider.notifier)
+        .getMe(token: extractedData["token"]);
+
     state = state.copyWith(
       token: extractedData["token"],
       userId: extractedData["userId"],
       expiryDate: expiryDate,
     );
-    print("Logged in");
-
-    await ref.read(accountProvider.notifier).getMe();
 
     _autoLogout();
     _autoRefreshToken();
@@ -238,7 +238,6 @@ class Auth extends StateNotifier<AuthState> {
     try {
       await _auth(email, passw);
     } catch (e) {
-      print(e);
       state = state.copyWith(isAuthing: false, errorState: e.toString());
       rethrow;
     }
