@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:guard_app/providers/providers.dart';
 import 'package:guard_app/screens/login.dart';
 import 'package:guard_app/screens/loc_sharing.dart';
 import 'package:guard_app/theme/dark_theme.dart';
@@ -16,7 +15,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ProviderScope(child: NavigationWrapper());
+    return const ProviderScope(child: NavigationWrapper());
   }
 }
 

@@ -3,17 +3,15 @@ import 'dart:math';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:guard_app/providers/providers.dart';
-import 'package:guard_app/screens/loc_sharing.dart';
 import 'package:guard_app/widgets/logo.dart';
 import 'package:guard_app/widgets/text_input.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class LoginPage extends HookConsumerWidget {
-  LoginPage({Key? key, required this.title}) : super(key: key);
+  const LoginPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
-  var one = true;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,18 +21,13 @@ class LoginPage extends HookConsumerWidget {
     final passwordFocusNode = useFocusNode();
 
     final useAuth = ref.watch(authProvider);
-    final authProv = ref.watch(authProvider.notifier);
     final mediaQuery = MediaQuery.of(context);
 
-    if (one) {
-      one = false;
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
-        ref
-            .read(authProvider.notifier)
-            .tryAutoLogin()
-            .then((value) => context.beamToNamed("/locSharing"));
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      ref.read(authProvider.notifier).tryAutoLogin().then((value) {
+        if (value) context.beamToNamed("/locSharing");
       });
-    }
+    });
 
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
