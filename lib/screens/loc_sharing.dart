@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:guard_app/providers/providers.dart';
 import 'package:guard_app/widgets/logo.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class LocSharingPage extends StatefulHookConsumerWidget {
   const LocSharingPage({Key? key}) : super(key: key);
