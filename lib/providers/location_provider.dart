@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:isolate';
@@ -224,6 +226,7 @@ class LocationProvider extends StateNotifier<LocationState> {
             })
         .toList();
     pendingToSend = [];
+    // ignore: unused_local_variable
     final json = jsonEncode(dataToSend);
     // TODO: Send to gatego
   }

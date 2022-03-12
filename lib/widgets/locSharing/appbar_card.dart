@@ -1,4 +1,3 @@
-import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:gatego_driver/providers/providers.dart';
 import 'package:gatego_driver/widgets/common/avatar.dart';
