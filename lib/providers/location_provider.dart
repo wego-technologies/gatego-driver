@@ -3,7 +3,12 @@ import 'dart:convert';
 import 'dart:isolate';
 
 import 'package:background_location/background_location.dart';
-import 'package:here_sdk/core.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:gatego_driver/theme/light_theme.dart';
+import 'package:here_sdk/core.dart' as here_core;
+import 'package:here_sdk/core.errors.dart';
+import 'package:here_sdk/mapview.dart' as here_map;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -13,26 +18,39 @@ class LocationState {
   bool isLocating;
   bool isPermissionGranted;
   bool isAwaitingPermissions;
-  GeoCoordinates? latestCoordinates;
+  here_map.HereMapController? mapController;
+  Location? latestLocation;
+  bool shouldFly;
+  List<here_core.GeoCoordinates> lastLines;
 
-  LocationState(
-      {required this.isLocating,
-      required this.isPermissionGranted,
-      required this.isAwaitingPermissions,
-      this.latestCoordinates});
+  LocationState({
+    required this.isLocating,
+    required this.isPermissionGranted,
+    required this.isAwaitingPermissions,
+    this.mapController,
+    this.latestLocation,
+    this.shouldFly = true,
+    this.lastLines = const [],
+  });
 
   LocationState copyWith({
     bool? isLocating,
     bool? isPermissionGranted,
     bool? isAwaitingPermissions,
-    GeoCoordinates? latestCoordinates,
+    here_map.HereMapController? mapController,
+    Location? latestLocation,
+    bool? shouldFly,
+    List<here_core.GeoCoordinates>? lastLines,
   }) {
     return LocationState(
       isLocating: isLocating ?? this.isLocating,
       isPermissionGranted: isPermissionGranted ?? this.isPermissionGranted,
       isAwaitingPermissions:
           isAwaitingPermissions ?? this.isAwaitingPermissions,
-      latestCoordinates: latestCoordinates ?? this.latestCoordinates,
+      mapController: mapController ?? this.mapController,
+      latestLocation: latestLocation ?? this.latestLocation,
+      shouldFly: shouldFly ?? this.shouldFly,
+      lastLines: lastLines ?? this.lastLines,
     );
   }
 
@@ -41,8 +59,10 @@ class LocationState {
       'isLocating': isLocating,
       'isPermissionGranted': isPermissionGranted,
       'isAwaitingPermissions': isAwaitingPermissions,
-      'latestCoordinates':
-          "${latestCoordinates?.latitude}, ${latestCoordinates?.longitude}, ${latestCoordinates?.altitude}",
+      //'mapController': mapController?.toMap(),
+      'latestLocation': latestLocation?.toMap(),
+      'shouldFly': shouldFly,
+      //'lastLines': lastLines.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -51,7 +71,10 @@ class LocationState {
       isLocating: map['isLocating'] ?? false,
       isPermissionGranted: map['isPermissionGranted'] ?? false,
       isAwaitingPermissions: map['isAwaitingPermissions'] ?? false,
-      //latestCoordinates: map['latestCoordinates'] != null ? GeoCoordinates.fromMap(map['latestCoordinates']) : null,
+      //mapController: map['mapController'] != null ? here_map.HereMapController.fromMap(map['mapController']) : null,
+      //latestLocation: map['latestLocation'] != null ? Location.fromMap(map['latestLocation']) : null,
+      shouldFly: map['shouldFly'] ?? false,
+      //lastLines: List<here_core.GeoCoordinates>.from(map['lastLines']?.map((x) => here_core.GeoCoordinates.fromMap(x))),
     );
   }
 
@@ -62,7 +85,7 @@ class LocationState {
 
   @override
   String toString() {
-    return 'LocationState(isLocating: $isLocating, isPermissionGranted: $isPermissionGranted, isAwaitingPermissions: $isAwaitingPermissions, latestCoordinates: $latestCoordinates)';
+    return 'LocationState(isLocating: $isLocating, isPermissionGranted: $isPermissionGranted, isAwaitingPermissions: $isAwaitingPermissions, mapController: $mapController, latestLocation: $latestLocation, shouldFly: $shouldFly, lastLines: $lastLines)';
   }
 
   @override
@@ -73,7 +96,10 @@ class LocationState {
         other.isLocating == isLocating &&
         other.isPermissionGranted == isPermissionGranted &&
         other.isAwaitingPermissions == isAwaitingPermissions &&
-        other.latestCoordinates == latestCoordinates;
+        other.mapController == mapController &&
+        other.latestLocation == latestLocation &&
+        other.shouldFly == shouldFly &&
+        listEquals(other.lastLines, lastLines);
   }
 
   @override
@@ -81,7 +107,10 @@ class LocationState {
     return isLocating.hashCode ^
         isPermissionGranted.hashCode ^
         isAwaitingPermissions.hashCode ^
-        latestCoordinates.hashCode;
+        mapController.hashCode ^
+        latestLocation.hashCode ^
+        shouldFly.hashCode ^
+        lastLines.hashCode;
   }
 }
 
@@ -93,9 +122,10 @@ class LocationProvider extends StateNotifier<LocationState> {
           isAwaitingPermissions: true,
         ));
   final Ref ref;
+  here_map.LocationIndicator? locIndicator;
+  here_map.MapPolyline? mapPolyline;
 
   ReceivePort port = ReceivePort();
-  StreamController controller = StreamController();
 
   Future<bool> checkPremission() async {
     try {
@@ -121,18 +151,103 @@ class LocationProvider extends StateNotifier<LocationState> {
 
   Future<void> beginTracking() async {
     if (state.isLocating) return;
+
+    BackgroundLocation.setAndroidNotification(
+      title: "Gatego is tracking your location",
+      message: "Click here to open the Gatego Driver app.",
+      icon: "@mipmap/launcher_icon",
+    );
     BackgroundLocation.startLocationService();
     state = state.copyWith(isLocating: true);
 
     BackgroundLocation.getLocationUpdates((location) {
-      ref.read(hereGeoCoords.state).state = location;
+      final oldLoc = state.latestLocation;
+      state = state.copyWith(latestLocation: location);
+      _updateMap(oldLoc, location);
     });
+
+    locIndicator ??= here_map.LocationIndicator();
+    state.mapController?.addLifecycleListener(locIndicator!);
   }
 
   Future<void> stopAndDispose() async {
     BackgroundLocation.stopLocationService();
+    state.mapController?.removeLifecycleListener(locIndicator!);
+    locIndicator = null;
     state = state.copyWith(isLocating: false);
   }
 
-  static const String isolateName = "LocatorIsolate";
+  void shouldFly({bool doNow = true}) {
+    state = state.copyWith(shouldFly: true);
+    if (doNow) {
+      _updateMap(null, state.latestLocation!);
+    }
+  }
+
+  void _updateMap(Location? previous, Location next) {
+    if (state.mapController != null) {
+      final nextCoordinate =
+          here_core.GeoCoordinates(next.latitude!, next.longitude!);
+
+      final previousCoordinate = previous == null
+          ? null
+          : here_core.GeoCoordinates(previous.latitude!, previous.longitude!);
+
+      final loc = here_core.Location.withCoordinates(nextCoordinate);
+      loc.time = DateTime.now();
+      loc.bearingInDegrees = next.bearing;
+
+      locIndicator?.updateLocation(loc);
+
+      if (previousCoordinate == null ||
+          nextCoordinate.distanceTo(previousCoordinate) > 1) {
+        if (state.shouldFly) {
+          if (previousCoordinate == null) {
+            state.mapController?.camera
+                .lookAtPointWithDistance(nextCoordinate, 1500);
+          } else {
+            state.mapController?.camera
+                .flyToWithOptionsAndGeoOrientationAndDistance(
+                    nextCoordinate,
+                    here_core.GeoOrientationUpdate(loc.bearingInDegrees, 60),
+                    1500,
+                    here_map.MapCameraFlyToOptions.withDefaults());
+          }
+        }
+        state.lastLines.add(nextCoordinate);
+        if (state.lastLines.length > 1000) {
+          state.lastLines.removeAt(0);
+        }
+        final mapScene = state.mapController?.mapScene;
+
+        final mapPolylineNew = _createPolyline(state.lastLines);
+        if (mapPolylineNew != null) {
+          mapScene?.addMapPolyline(mapPolylineNew);
+        }
+        if (mapPolyline != null) {
+          mapScene?.removeMapPolyline(mapPolyline!);
+        }
+        mapPolyline = mapPolylineNew;
+      }
+    }
+  }
+
+  here_map.MapPolyline? _createPolyline(
+    List<here_core.GeoCoordinates> coordinates,
+  ) {
+    here_core.GeoPolyline geoPolyline;
+    try {
+      geoPolyline = here_core.GeoPolyline(coordinates);
+    } on InstantiationException {
+      // Thrown when less than two vertices.
+      return null;
+    }
+
+    double widthInPixels = 20;
+    Color lineColor = lightTheme().primaryColor;
+    here_map.MapPolyline mapPolyline =
+        here_map.MapPolyline(geoPolyline, widthInPixels, lineColor);
+
+    return mapPolyline;
+  }
 }
