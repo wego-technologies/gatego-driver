@@ -293,6 +293,7 @@ class Auth extends StateNotifier<AuthState> {
   void clearData() {
     Future.delayed(const Duration(milliseconds: 0), () {
       ref.read(accountProvider.notifier).clear();
+      ref.read(locationProvider.notifier).stopAndDispose(clear: true);
       /*Provider.of<CarrierProvider>(context, listen: false).clear();
       Provider.of<YardProvider>(context, listen: false).clear();
       Provider.of<SummaryProvider>(context, listen: false).clear();*/

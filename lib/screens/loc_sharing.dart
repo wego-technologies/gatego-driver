@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import '../providers/providers.dart';
 import '../widgets/logo.dart';
 import 'package:here_sdk/core.dart';
-import 'package:here_sdk/core.errors.dart';
 import 'package:here_sdk/gestures.dart';
 import 'package:here_sdk/mapview.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:background_location/background_location.dart' as bg_loc;
 
 class LocSharingPage extends StatefulHookConsumerWidget {
   const LocSharingPage({Key? key}) : super(key: key);
@@ -17,14 +15,6 @@ class LocSharingPage extends StatefulHookConsumerWidget {
 }
 
 class _LocSharingPageState extends ConsumerState<LocSharingPage> {
-  @override
-  void initState() {
-    if (ref.read(locationProvider).isAwaitingPermissions) {
-      ref.read(locationProvider.notifier).checkPremission();
-    }
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final locationState = ref.watch(locationProvider);
@@ -120,13 +110,21 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
                                 .copyWith(fontSize: 20),
                           ),
                           OutlinedButton.icon(
-                            onPressed: () async {
-                              if (locationState.isLocating) {
-                                locationStateNotifier.stopAndDispose();
-                              } else {
-                                await locationStateNotifier.beginTracking();
-                              }
-                            },
+                            onPressed: locationState.isAwaitingPermissions
+                                ? null
+                                : () async {
+                                    if (locationState.isLocating) {
+                                      locationStateNotifier.stopAndDispose();
+                                    } else {
+                                      if (locationState.isPermissionGranted) {
+                                        await locationStateNotifier
+                                            .beginTracking();
+                                      } else {
+                                        locationStateNotifier
+                                            .launchPermission(context);
+                                      }
+                                    }
+                                  },
                             icon: Icon(locationState.isLocating
                                 ? Icons.stop_rounded
                                 : Icons.play_arrow_rounded),

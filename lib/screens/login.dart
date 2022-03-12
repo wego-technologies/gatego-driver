@@ -140,38 +140,43 @@ Please log in to continue''',
                           child: SizedBox(),
                         ),
                         !useAuth.isAuthing
-                            ? ElevatedButton.icon(
-                                icon: const Icon(
-                                  Icons.login_rounded,
-                                  size: 18,
-                                ),
-                                style: ButtonStyle(
-                                  padding: MaterialStateProperty.resolveWith(
-                                    (states) => const EdgeInsets.symmetric(
-                                        horizontal: 50, vertical: 10),
+                            ? SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton.icon(
+                                  icon: Text(
+                                    "Sign In",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline6
+                                        ?.copyWith(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
                                   ),
-                                  shape: MaterialStateProperty.resolveWith(
-                                    (states) => RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(50000),
+                                  style: ButtonStyle(
+                                    padding: MaterialStateProperty.resolveWith(
+                                      (states) => const EdgeInsets.symmetric(
+                                        vertical: 13,
+                                      ),
+                                    ),
+                                    shape: MaterialStateProperty.resolveWith(
+                                      (states) => RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(50000),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                onPressed: () {
-                                  isLoginButton = true;
+                                  onPressed: () {
+                                    isLoginButton = true;
 
-                                  login(usernameController.text,
-                                      passwordController.text, ref, context);
-                                },
-                                label: Text(
-                                  "Log In",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline6
-                                      ?.copyWith(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold),
+                                    login(usernameController.text,
+                                        passwordController.text, ref, context);
+                                  },
+                                  label: const Icon(
+                                    Icons.arrow_forward_rounded,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
                                 ),
                               )
                             : CircularProgressIndicator(
