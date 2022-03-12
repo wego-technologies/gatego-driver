@@ -4,8 +4,8 @@ import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import '../providers/auth_provider.dart';
 import '../providers/providers.dart';
-import '../widgets/logo.dart';
-import '../widgets/text_input.dart';
+import '../widgets/common/logo.dart';
+import '../widgets/common/text_input.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
