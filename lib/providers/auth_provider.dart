@@ -145,6 +145,7 @@ class Auth extends StateNotifier<AuthState> {
         tempState = tempState.copyWith(
           token: resData["jwt_token"],
           userId: username,
+          errorState: null,
         );
 
         if (tempState.token != null) {
