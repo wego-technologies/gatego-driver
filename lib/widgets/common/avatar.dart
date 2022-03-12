@@ -9,7 +9,7 @@ class Avatar extends StatelessWidget {
     return CircleAvatar(
       backgroundColor: Theme.of(context).colorScheme.background,
       child: Container(
-        margin: const EdgeInsetsDirectional.all(5),
+        margin: const EdgeInsetsDirectional.all(10),
         width: double.infinity,
         height: double.infinity,
         child: FittedBox(

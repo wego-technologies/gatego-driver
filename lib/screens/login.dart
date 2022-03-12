@@ -48,148 +48,156 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     mediaQuery.viewInsets.bottom,
                 useAuth.errorState != null ? 490 : 450),
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      Logo(
-                        width: 170,
-                      ),
-                      SizedBox(
-                        height: 12,
-                      ),
-                      Text(
-                        '''Welcome to the Gatego Driver app.
-Please log in to continue''',
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 30),
+            child: AutofillGroup(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Expanded(
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TextInput(
-                          c: usernameController,
-                          fn: usernameFocusNode,
-                          text: "Username or Email",
-                          icon: Icons.person,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: const [
+                        Logo(
+                          width: 170,
                         ),
-                        TextInput(
-                          c: passwordController,
-                          fn: passwordFocusNode,
-                          obscureText: true,
-                          icon: Icons.vpn_key,
-                          text: "Password",
-                          nextFocus: (string) {
-                            login(usernameController.text,
-                                passwordController.text, ref, context);
-                          },
+                        SizedBox(
+                          height: 12,
                         ),
-                        if (useAuth.errorState != null)
-                          SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: Card(
-                              color:
-                                  Theme.of(context).errorColor.withAlpha(200),
-                              child: Row(
-                                children: [
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  const Icon(
-                                    Icons.warning_rounded,
-                                    color: Colors.white,
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      useAuth.errorState!,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
+                        Text(
+                          'Welcome to the Gatego Driver app.'
+                          'Please log in to continue',
+                          textAlign: TextAlign.center,
+                        ),
                       ],
                     ),
                   ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        const Expanded(
-                          flex: 5,
-                          child: SizedBox(),
-                        ),
-                        !useAuth.isAuthing
-                            ? SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton.icon(
-                                  icon: Text(
-                                    "Sign In",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        ?.copyWith(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold),
-                                  ),
-                                  style: ButtonStyle(
-                                    padding: MaterialStateProperty.resolveWith(
-                                      (states) => const EdgeInsets.symmetric(
-                                        vertical: 13,
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 30),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextInput(
+                            c: usernameController,
+                            fn: usernameFocusNode,
+                            autofillHints: const [AutofillHints.email],
+                            text: "Username or Email",
+                            icon: Icons.person,
+                          ),
+                          TextInput(
+                            autofillHints: const [AutofillHints.password],
+                            c: passwordController,
+                            fn: passwordFocusNode,
+                            obscureText: true,
+                            icon: Icons.vpn_key,
+                            text: "Password",
+                            nextFocus: (string) {
+                              login(usernameController.text,
+                                  passwordController.text, ref, context);
+                            },
+                          ),
+                          if (useAuth.errorState != null)
+                            SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: Card(
+                                color:
+                                    Theme.of(context).errorColor.withAlpha(200),
+                                child: Row(
+                                  children: [
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    const Icon(
+                                      Icons.warning_rounded,
+                                      color: Colors.white,
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        useAuth.errorState!,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                    shape: MaterialStateProperty.resolveWith(
-                                      (states) => RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(50000),
-                                      ),
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    isLoginButton = true;
-
-                                    login(usernameController.text,
-                                        passwordController.text, ref, context);
-                                  },
-                                  label: const Icon(
-                                    Icons.arrow_forward_rounded,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
+                                  ],
                                 ),
-                              )
-                            : CircularProgressIndicator(
-                                color: Theme.of(context).primaryColor,
                               ),
-                        const Expanded(
-                          child: SizedBox(),
-                        ),
-                      ],
+                            )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const Expanded(
+                            flex: 5,
+                            child: SizedBox(),
+                          ),
+                          !useAuth.isAuthing
+                              ? SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton.icon(
+                                    icon: Text(
+                                      "Sign In",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headline6
+                                          ?.copyWith(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold),
+                                    ),
+                                    style: ButtonStyle(
+                                      padding:
+                                          MaterialStateProperty.resolveWith(
+                                        (states) => const EdgeInsets.symmetric(
+                                          vertical: 13,
+                                        ),
+                                      ),
+                                      shape: MaterialStateProperty.resolveWith(
+                                        (states) => RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(50000),
+                                        ),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      isLoginButton = true;
+
+                                      login(
+                                          usernameController.text,
+                                          passwordController.text,
+                                          ref,
+                                          context);
+                                    },
+                                    label: const Icon(
+                                      Icons.arrow_forward_rounded,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                  ),
+                                )
+                              : CircularProgressIndicator(
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                          const Expanded(
+                            child: SizedBox(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

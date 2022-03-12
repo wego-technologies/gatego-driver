@@ -51,10 +51,10 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
               ),
               if (locationState.latestLocation?.speed != null &&
                   locationState.isLocating)
-                Positioned(
-                  bottom: locationState.shouldFly ? 90 : 150,
-                  right: 20,
-                  child: const SpeedIndicator(),
+                const Positioned(
+                  bottom: 90,
+                  left: 20,
+                  child: SpeedIndicator(),
                 ),
             ],
           ),
