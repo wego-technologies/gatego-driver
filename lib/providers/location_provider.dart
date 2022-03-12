@@ -207,7 +207,7 @@ class LocationProvider extends StateNotifier<LocationState> {
       state = state.copyWith(latestLocation: location);
       _updateMap(oldLoc, location);
       pendingToSend.add(location);
-      if (pendingToSend.length > 100) sendCoordinatesToServer();
+      if (pendingToSend.length > 99) sendCoordinatesToServer();
     });
     locIndicator ??= here_map.LocationIndicator();
     state.mapController?.addLifecycleListener(locIndicator!);
