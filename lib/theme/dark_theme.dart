@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 ThemeData darkTheme() {
   return ThemeData.dark().copyWith(
     primaryColor: const Color(0xff00a1d3),
+    useMaterial3: true,
     toggleableActiveColor: const Color(0xff00a1d3),
     colorScheme: ColorScheme.fromSeed(
         seedColor: const Color(0xff00a1d3), brightness: Brightness.dark),

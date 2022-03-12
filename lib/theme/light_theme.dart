@@ -4,6 +4,7 @@ import '../utils/create_swatch.dart';
 ThemeData lightTheme() {
   return ThemeData(
       primarySwatch: genSwatch(const Color(0xff00a1d3)),
+      useMaterial3: true,
       visualDensity: VisualDensity.adaptivePlatformDensity,
       textTheme: const TextTheme(
         headline1: TextStyle(
