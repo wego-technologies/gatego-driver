@@ -18,11 +18,3 @@ final locationProvider =
     StateNotifierProvider<LocationProvider, LocationState>((ref) {
   return LocationProvider(ref);
 });
-
-final hereGeoCoords = StateProvider<Location?>(
-  (ref) => null,
-);
-
-final hereController = StateProvider<here.HereMapController?>(
-  (ref) => null,
-);

@@ -25,69 +25,12 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
     super.initState();
   }
 
-  List<GeoCoordinates> lines = [];
-  GeoPolyline? geoPolyline;
-  MapPolyline? mapPolyline;
-  LocationIndicator? locIndicator;
-  bool shouldfly = true;
-
   @override
   Widget build(BuildContext context) {
     final locationState = ref.watch(locationProvider);
     final locationStateNotifier = ref.watch(locationProvider.notifier);
     final accountProv = ref.watch(accountProvider).account;
     final authProv = ref.watch(authProvider.notifier);
-
-    locIndicator ??= LocationIndicator();
-
-    ref.listen<bg_loc.Location?>(hereGeoCoords, (previous, next) {
-      final controller = ref.read(hereController);
-
-      if (controller != null) {
-        final nextCoordinate = GeoCoordinates(next!.latitude!, next.longitude!);
-
-        if (previous == null) {}
-        final previousCoordinate = previous == null
-            ? null
-            : GeoCoordinates(previous.latitude!, previous.longitude!);
-
-        Location loc = Location.withCoordinates(nextCoordinate);
-        loc.time = DateTime.now();
-        loc.bearingInDegrees = next.bearing;
-
-        locIndicator?.updateLocation(loc);
-        controller.addLifecycleListener(locIndicator!);
-
-        if (previousCoordinate == null ||
-            nextCoordinate.distanceTo(previousCoordinate) > 1) {
-          if (shouldfly) {
-            if (previousCoordinate == null) {
-              controller.camera.lookAtPointWithDistance(nextCoordinate, 1500);
-            } else {
-              controller.camera.flyToWithOptionsAndGeoOrientationAndDistance(
-                  nextCoordinate,
-                  GeoOrientationUpdate(loc.bearingInDegrees, 60),
-                  1500,
-                  MapCameraFlyToOptions.withDefaults());
-            }
-          }
-          lines.add(nextCoordinate);
-          if (lines.length > 1000) {
-            lines.removeAt(0);
-          }
-          final mapScene = controller.mapScene;
-
-          final mapPolylineNew = createPolyline(lines, context);
-          if (mapPolylineNew != null) {
-            mapScene.addMapPolyline(mapPolylineNew);
-          }
-          if (mapPolyline != null) {
-            mapScene.removeMapPolyline(mapPolyline!);
-          }
-          mapPolyline = mapPolylineNew;
-        }
-      }
-    });
 
     if (accountProv == null) {
       WidgetsBinding.instance?.addPostFrameCallback((_) => setState(() {}));
@@ -108,25 +51,13 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
                 right: 0,
                 child: HereMap(onMapCreated: _onMapCreated),
               ),
-              if (!shouldfly && locationState.isLocating)
+              if (!locationState.shouldFly && locationState.isLocating)
                 Positioned(
                   bottom: 90,
                   right: 20,
                   child: FloatingActionButton(
                     onPressed: () {
-                      shouldfly = true;
-                      final locRaw = ref.read(hereGeoCoords);
-                      final loc =
-                          GeoCoordinates(locRaw!.latitude!, locRaw.longitude!);
-                      ref
-                          .read(hereController.state)
-                          .state!
-                          .camera
-                          .flyToWithOptionsAndGeoOrientationAndDistance(
-                              loc,
-                              GeoOrientationUpdate(locRaw.bearing, 60),
-                              1500,
-                              MapCameraFlyToOptions.withDefaults());
+                      locationStateNotifier.shouldFly();
                       setState(() {});
                     },
                     child: const Icon(Icons.my_location_rounded),
@@ -181,7 +112,7 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
                         children: [
                           Text(
                             locationState.isLocating
-                                ? "Tracking is Started"
+                                ? "Tracking is Active"
                                 : "Tracking is Stopped",
                             style: Theme.of(context)
                                 .textTheme
@@ -237,34 +168,30 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
       hereMapController.gestures.disableDefaultAction(GestureType.twoFingerPan);
       hereMapController.gestures.disableDefaultAction(GestureType.twoFingerTap);*/
 
+      var shouldFly = ref.read(locationProvider).shouldFly;
+
       hereMapController.gestures.panListener = PanListener((p0, p1, p2, p3) {
-        if (mounted && shouldfly) {
+        if (mounted && shouldFly) {
           setState(() {
-            shouldfly = false;
+            ref.read(locationProvider).shouldFly = false;
           });
         }
       });
       hereMapController.gestures.doubleTapListener = DoubleTapListener((p0) {
-        if (mounted && shouldfly) {
-          setState(() {
-            shouldfly = false;
-          });
+        if (mounted && shouldFly) {
+          ref.read(locationProvider).shouldFly = false;
         }
       });
       hereMapController.gestures.pinchRotateListener =
           PinchRotateListener((p0, p1, p2, p3, p4) {
-        if (mounted && shouldfly) {
-          setState(() {
-            shouldfly = false;
-          });
+        if (mounted && shouldFly) {
+          ref.read(locationProvider).shouldFly = false;
         }
       });
       hereMapController.gestures.twoFingerPanListener =
           TwoFingerPanListener((p0, p1, p2, p3) {
-        if (mounted && shouldfly) {
-          setState(() {
-            shouldfly = false;
-          });
+        if (mounted && shouldFly) {
+          ref.read(locationProvider).shouldFly = false;
         }
       });
 
@@ -274,7 +201,7 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
       hereMapController.setWatermarkPosition(
           WatermarkPlacement.bottomCenter, 10);
 
-      ref.read(hereController.state).state = hereMapController;
+      ref.read(locationProvider).mapController = hereMapController;
     });
   }
 }
@@ -282,22 +209,3 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
 String getInitials(String? name) => name?.isNotEmpty ?? false
     ? name!.trim().split(RegExp(' +')).map((s) => s[0]).take(2).join()
     : 'NN';
-
-MapPolyline? createPolyline(
-  List<GeoCoordinates> coordinates,
-  BuildContext context,
-) {
-  GeoPolyline geoPolyline;
-  try {
-    geoPolyline = GeoPolyline(coordinates);
-  } on InstantiationException {
-    // Thrown when less than two vertices.
-    return null;
-  }
-
-  double widthInPixels = 20;
-  Color lineColor = Theme.of(context).primaryColor;
-  MapPolyline mapPolyline = MapPolyline(geoPolyline, widthInPixels, lineColor);
-
-  return mapPolyline;
-}
