@@ -1,6 +1,6 @@
 {
-    "name": "Gatego Smartloc",
-    "short_name": "Gatego Smartloc",
+    "name": "Gatego Driver",
+    "short_name": "Gatego Driver",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#F7F9FD",
