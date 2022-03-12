@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:gatego_driver/providers/providers.dart';
 import 'package:gatego_driver/utils/string_to_role.dart';
 import 'package:gatego_driver/widgets/common/avatar.dart';
-import 'package:gatego_driver/widgets/common/logo.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class UserModalCard extends HookConsumerWidget {

@@ -1,8 +1,6 @@
-import 'package:background_location/background_location.dart';
 import 'account_provider.dart';
 import 'auth_provider.dart';
 import 'location_provider.dart';
-import 'package:here_sdk/mapview.dart' as here;
 import 'package:riverpod/riverpod.dart';
 
 final authProvider = StateNotifierProvider<Auth, AuthState>((ref) {

@@ -1,11 +1,9 @@
-import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:gatego_driver/widgets/locSharing/appbar_card.dart';
 import 'package:gatego_driver/widgets/locSharing/focus_on_map_fab.dart';
 import 'package:gatego_driver/widgets/locSharing/speed_indicator.dart';
 import 'package:gatego_driver/widgets/locSharing/tracking_status_card.dart';
 import '../providers/providers.dart';
-import '../widgets/common/logo.dart';
 import 'package:here_sdk/core.dart';
 import 'package:here_sdk/gestures.dart';
 import 'package:here_sdk/mapview.dart';
