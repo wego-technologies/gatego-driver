@@ -10,6 +10,7 @@ import 'package:beamer/beamer.dart';
 
 void main() {
   SdkContext.init(IsolateOrigin.main);
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 

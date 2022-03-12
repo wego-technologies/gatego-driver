@@ -3,6 +3,7 @@ import 'package:gatego_driver/widgets/locSharing/appbar_card.dart';
 import 'package:gatego_driver/widgets/locSharing/focus_on_map_fab.dart';
 import 'package:gatego_driver/widgets/locSharing/speed_indicator.dart';
 import 'package:gatego_driver/widgets/locSharing/tracking_status_card.dart';
+import 'package:wakelock/wakelock.dart';
 import '../providers/providers.dart';
 import 'package:here_sdk/core.dart';
 import 'package:here_sdk/gestures.dart';
@@ -20,6 +21,8 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
   @override
   Widget build(BuildContext context) {
     final locationState = ref.watch(locationProvider);
+
+    Wakelock.enable();
 
     return Scaffold(
       body: SafeArea(
