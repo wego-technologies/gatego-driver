@@ -30,8 +30,12 @@ class AppBarCard extends ConsumerWidget {
                           context: context,
                           //backgroundColor: Colors.transparent,
                           constraints: const BoxConstraints(maxHeight: 100),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15)),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(15),
+                              topRight: Radius.circular(15),
+                            ),
+                          ),
                           builder: (context) {
                             return const UserModalCard();
                           });
