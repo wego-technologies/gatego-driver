@@ -17,3 +17,20 @@ Role stringToRole(string) {
   }
   return role;
 }
+
+String beatuifyRole(Role? role) {
+  switch (role) {
+    case Role.admin:
+      return "Administrator";
+    case Role.carrierAdmin:
+      return "Carrier Admin";
+    case Role.driver:
+      return "Driver";
+    case Role.guard:
+      return "Guard";
+    case Role.orgAdmin:
+      return "Org Admin";
+    default:
+      return "Unknown Role";
+  }
+}

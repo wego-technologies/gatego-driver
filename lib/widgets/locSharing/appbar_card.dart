@@ -1,6 +1,8 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:gatego_driver/providers/providers.dart';
+import 'package:gatego_driver/widgets/common/avatar.dart';
+import 'package:gatego_driver/widgets/common/user_modal.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../common/logo.dart';
@@ -23,20 +25,20 @@ class AppBarCard extends ConsumerWidget {
               const Logo(width: 100),
               Row(
                 children: [
-                  CircleAvatar(
-                    backgroundColor: Theme.of(context).colorScheme.background,
-                    child: Text(getInitials(accountProv?.name)),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  IconButton(
-                    onPressed: () async {
-                      await ref.read(authProvider.notifier).logout();
-                      Beamer.of(context).beamToNamed('/login');
+                  GestureDetector(
+                    onTap: () {
+                      showModalBottomSheet(
+                          context: context,
+                          //backgroundColor: Colors.transparent,
+                          constraints: const BoxConstraints(maxHeight: 100),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15)),
+                          builder: (context) {
+                            return const UserModalCard();
+                          });
                     },
-                    icon: const Icon(Icons.logout),
-                  )
+                    child: Avatar(accountProv?.name),
+                  ),
                 ],
               ),
             ],
@@ -46,7 +48,3 @@ class AppBarCard extends ConsumerWidget {
     );
   }
 }
-
-String getInitials(String? name) => name?.isNotEmpty ?? false
-    ? name!.trim().split(RegExp(' +')).map((s) => s[0]).take(2).join()
-    : '..';
