@@ -1,7 +1,7 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
-import 'package:gatego_smartloc/providers/providers.dart';
-import 'package:gatego_smartloc/widgets/logo.dart';
+import '../providers/providers.dart';
+import '../widgets/logo.dart';
 import 'package:here_sdk/core.dart';
 import 'package:here_sdk/core.errors.dart';
 import 'package:here_sdk/gestures.dart';

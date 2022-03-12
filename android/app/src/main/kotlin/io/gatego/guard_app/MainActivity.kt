@@ -1,4 +1,4 @@
-package io.gatego.smartloc
+package io.gatego.driver
 
 import io.flutter.embedding.android.FlutterActivity
 

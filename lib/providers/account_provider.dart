@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:gatego_smartloc/providers/providers.dart';
-import 'package:gatego_smartloc/utils/string_to_role.dart';
+import 'providers.dart';
+import '../utils/string_to_role.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod/riverpod.dart';
 import 'dart:async';

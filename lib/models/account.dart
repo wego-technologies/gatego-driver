@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:gatego_smartloc/utils/string_to_role.dart';
+import '../utils/string_to_role.dart';
 
 import '../models/carrier.dart';
 import '../models/organization.dart';
