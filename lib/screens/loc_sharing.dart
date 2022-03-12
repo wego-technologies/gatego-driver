@@ -118,7 +118,7 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
       hereMapController.camera.lookAtPointWithDistance(
           GeoCoordinates(52.530932, 13.384915), distanceToEarthInMeters);
       hereMapController.setWatermarkPosition(
-          WatermarkPlacement.bottomCenter, 10);
+          WatermarkPlacement.bottomCenter, 13);
 
       ref.read(locationProvider).mapController = hereMapController;
     });
