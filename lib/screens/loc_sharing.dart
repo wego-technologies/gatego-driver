@@ -42,7 +42,7 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
               if (!locationState.shouldFly && locationState.isLocating)
                 const Positioned(
                   bottom: 90,
-                  right: 20,
+                  right: 25,
                   child: FocusOnMapFab(),
                 ),
               const Positioned(
@@ -53,8 +53,11 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
               ),
               if (locationState.latestLocation?.speed != null &&
                   locationState.isLocating)
-                const Positioned(
-                    bottom: 90, right: 20, child: SpeedIndicator()),
+                Positioned(
+                  bottom: locationState.shouldFly ? 90 : 150,
+                  right: 20,
+                  child: const SpeedIndicator(),
+                ),
             ],
           ),
         ),
