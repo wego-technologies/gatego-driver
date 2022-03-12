@@ -62,5 +62,6 @@ ThemeData lightTheme() {
         ),
       ),
       backgroundColor: const Color(0xffECEEF4),
+      canvasColor: const Color(0xffECEEF4),
       fontFamily: "Inter");
 }

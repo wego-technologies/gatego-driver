@@ -2,6 +2,7 @@ import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:gatego_driver/widgets/locSharing/appbar_card.dart';
 import 'package:gatego_driver/widgets/locSharing/focus_on_map_fab.dart';
+import 'package:gatego_driver/widgets/locSharing/speed_indicator.dart';
 import 'package:gatego_driver/widgets/locSharing/tracking_status_card.dart';
 import '../providers/providers.dart';
 import '../widgets/common/logo.dart';
@@ -21,7 +22,6 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
   @override
   Widget build(BuildContext context) {
     final locationState = ref.watch(locationProvider);
-
 
     return Scaffold(
       body: SafeArea(
@@ -51,6 +51,10 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
                 right: 0,
                 child: TrackingStatusCard(),
               ),
+              if (locationState.latestLocation?.speed != null &&
+                  locationState.isLocating)
+                const Positioned(
+                    bottom: 90, right: 20, child: SpeedIndicator()),
             ],
           ),
         ),
