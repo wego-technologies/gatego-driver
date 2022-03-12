@@ -18,9 +18,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3.0.0
         
-      - name: Cache
-        uses: actions/cache@v2.1.7
-        
       - name: Set up Java
         uses: actions/setup-java@v3.0.0
         with:
