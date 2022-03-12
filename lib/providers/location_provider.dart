@@ -127,12 +127,10 @@ class LocationProvider extends StateNotifier<LocationState> {
           lastLines: [],
         ));
   final Ref ref;
-  here_map.LocationIndicator? locIndicator;
-  here_map.MapPolyline? mapPolyline;
+  here_map.LocationIndicator? _locIndicator;
+  here_map.MapPolyline? _mapPolyline;
 
-  ReceivePort port = ReceivePort();
-
-  List<Location> pendingToSend = [];
+  List<Location> _pendingToSend = [];
 
   Future<bool> checkPremission() async {
     if (!state.isAwaitingPermissions) return state.isPermissionGranted;
@@ -208,15 +206,15 @@ class LocationProvider extends StateNotifier<LocationState> {
       final oldLoc = state.latestLocation;
       state = state.copyWith(latestLocation: location);
       _updateMap(oldLoc, location);
-      pendingToSend.add(location);
-      if (pendingToSend.length > 99) sendCoordinatesToServer();
+      _pendingToSend.add(location);
+      if (_pendingToSend.length > 99) sendCoordinatesToServer();
     });
-    locIndicator ??= here_map.LocationIndicator();
-    state.mapController?.addLifecycleListener(locIndicator!);
+    _locIndicator ??= here_map.LocationIndicator();
+    state.mapController?.addLifecycleListener(_locIndicator!);
   }
 
   Future<void> sendCoordinatesToServer() async {
-    final dataToSend = pendingToSend
+    final dataToSend = _pendingToSend
         .map((e) => {
               "g": "${e.latitude},${e.longitude}",
               "a": e.altitude,
@@ -225,7 +223,7 @@ class LocationProvider extends StateNotifier<LocationState> {
               "t": e.time
             })
         .toList();
-    pendingToSend = [];
+    _pendingToSend = [];
     // ignore: unused_local_variable
     final json = jsonEncode(dataToSend);
     // TODO: Send to gatego
@@ -233,10 +231,10 @@ class LocationProvider extends StateNotifier<LocationState> {
 
   Future<void> stopAndDispose({clear = false}) async {
     BackgroundLocation.stopLocationService();
-    if (locIndicator != null) {
-      state.mapController?.removeLifecycleListener(locIndicator!);
+    if (_locIndicator != null) {
+      state.mapController?.removeLifecycleListener(_locIndicator!);
     }
-    locIndicator = null;
+    _locIndicator = null;
     state = state.copyWith(isLocating: false);
     if (clear) {
       state = LocationState(
@@ -267,7 +265,7 @@ class LocationProvider extends StateNotifier<LocationState> {
       loc.time = DateTime.now();
       loc.bearingInDegrees = next.bearing;
 
-      locIndicator?.updateLocation(loc);
+      _locIndicator?.updateLocation(loc);
 
       if (previousCoordinate == null ||
           nextCoordinate.distanceTo(previousCoordinate) > 1) {
@@ -294,10 +292,10 @@ class LocationProvider extends StateNotifier<LocationState> {
         if (mapPolylineNew != null) {
           mapScene?.addMapPolyline(mapPolylineNew);
         }
-        if (mapPolyline != null) {
-          mapScene?.removeMapPolyline(mapPolyline!);
+        if (_mapPolyline != null) {
+          mapScene?.removeMapPolyline(_mapPolyline!);
         }
-        mapPolyline = mapPolylineNew;
+        _mapPolyline = mapPolylineNew;
       }
     }
   }
