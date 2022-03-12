@@ -114,9 +114,8 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
         }
       });
 
-      const double distanceToEarthInMeters = 8000;
       hereMapController.camera.lookAtPointWithDistance(
-          GeoCoordinates(52.530932, 13.384915), distanceToEarthInMeters);
+          GeoCoordinates(52.530932, 13.384915), 55005000);
       hereMapController.setWatermarkPosition(
           WatermarkPlacement.bottomCenter, 13);
 

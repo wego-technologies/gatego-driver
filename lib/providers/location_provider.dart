@@ -230,7 +230,9 @@ class LocationProvider extends StateNotifier<LocationState> {
 
   Future<void> stopAndDispose({clear = false}) async {
     BackgroundLocation.stopLocationService();
-    state.mapController?.removeLifecycleListener(locIndicator!);
+    if (locIndicator != null) {
+      state.mapController?.removeLifecycleListener(locIndicator!);
+    }
     locIndicator = null;
     state = state.copyWith(isLocating: false);
     if (clear) {
