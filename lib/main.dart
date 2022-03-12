@@ -38,7 +38,11 @@ class NavigationWrapper extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     WidgetsBinding.instance?.addPostFrameCallback(
-        (_) => ref.read(authProvider.notifier).tryAutoLogin());
+      (_) {
+        ref.read(authProvider.notifier).tryAutoLogin();
+        ref.read(locationProvider.notifier).checkPremission();
+      },
+    );
 
     return MaterialApp.router(
       routeInformationParser: BeamerParser(),
