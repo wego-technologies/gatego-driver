@@ -54,8 +54,8 @@ class _SpeedIndicatorState extends ConsumerState<SpeedIndicator> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    // 2,23694 for mph
-                    (locationState.latestLocation!.speed! * 3.6)
+                    (locationState.latestLocation!.speed! *
+                            (isMetric ? 3.6 : 2.23694))
                         .toInt()
                         .toString(),
                     style: Theme.of(context)
@@ -64,7 +64,6 @@ class _SpeedIndicatorState extends ConsumerState<SpeedIndicator> {
                         ?.copyWith(fontSize: 22),
                   ),
                   Text(
-                    // 2,23694 for mph
                     isMetric ? "kmph" : "mph",
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
