@@ -43,7 +43,6 @@ dependencies:
   beamer: ^1.4.0+1
   background_location: ^0.8.1
   permission_handler: ^9.2.0
-  flutter_launcher_icons: "^0.9.2"
 
   here_sdk:
     path: plugins/here_sdk
@@ -51,6 +50,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.9.2"
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

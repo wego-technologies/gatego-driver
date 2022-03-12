@@ -130,6 +130,8 @@ class LocationProvider extends StateNotifier<LocationState> {
 
   ReceivePort port = ReceivePort();
 
+  List<Location> pendingToSend = [];
+
   Future<bool> checkPremission() async {
     if (!state.isAwaitingPermissions) return state.isPermissionGranted;
     try {
@@ -197,17 +199,33 @@ class LocationProvider extends StateNotifier<LocationState> {
       message: "Click here to open the Gatego Driver app.",
       icon: "@mipmap/launcher_icon",
     );
-    BackgroundLocation.startLocationService();
+    BackgroundLocation.startLocationService(distanceFilter: 1);
     state = state.copyWith(isLocating: true);
 
     BackgroundLocation.getLocationUpdates((location) {
       final oldLoc = state.latestLocation;
       state = state.copyWith(latestLocation: location);
       _updateMap(oldLoc, location);
+      pendingToSend.add(location);
+      if (pendingToSend.length > 100) sendCoordinatesToServer();
     });
-
     locIndicator ??= here_map.LocationIndicator();
     state.mapController?.addLifecycleListener(locIndicator!);
+  }
+
+  Future<void> sendCoordinatesToServer() async {
+    final dataToSend = pendingToSend
+        .map((e) => {
+              "g": "${e.latitude},${e.longitude}",
+              "a": e.altitude,
+              "b": e.bearing,
+              "ac": e.accuracy,
+              "t": e.time
+            })
+        .toList();
+    pendingToSend = [];
+    final json = jsonEncode(dataToSend);
+    // TODO: Send to gatego
   }
 
   Future<void> stopAndDispose({clear = false}) async {
@@ -262,7 +280,7 @@ class LocationProvider extends StateNotifier<LocationState> {
           }
         }
         state.lastLines.add(nextCoordinate);
-        if (state.lastLines.length > 1000) {
+        if (state.lastLines.length > 5000) {
           state.lastLines.removeAt(0);
         }
         final mapScene = state.mapController?.mapScene;
