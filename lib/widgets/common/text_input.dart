@@ -9,7 +9,9 @@ class TextInput extends StatefulWidget {
   final FocusNode fn;
   final void Function(String)? nextFocus;
   final bool enabled;
+  final List<String>? autofillHints;
   const TextInput({
+    this.autofillHints,
     this.setData,
     this.icon,
     this.text,
@@ -139,6 +141,7 @@ class _TextInputState extends State<TextInput> {
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.text,
                         onChanged: widget.setData,
+                        autofillHints: widget.autofillHints,
                         decoration: InputDecoration(
                           //fillColor: Color(0xfff5f5f5),
                           focusColor: const Color(0xfff5f5f5),
