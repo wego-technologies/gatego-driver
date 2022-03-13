@@ -37,7 +37,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     const length = 6;
     var borderColor = Theme.of(context).primaryColor;
-    const errorColor = Color.fromRGBO(255, 234, 238, 1);
+    var errorColor = Theme.of(context).errorColor.withAlpha(50);
     var fillColor = Theme.of(context).canvasColor;
     final defaultPinTheme = PinTheme(
       width: 56,
@@ -94,7 +94,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const Text(
-                          "Enter your unique pin that was sent to your phone.",
+                          "Enter the unique pin that was sent to your phone.",
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(
@@ -107,7 +107,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             controller: pinController,
                             focusNode: pinFocusNode,
                             defaultPinTheme: defaultPinTheme,
-                            onCompleted: (pin) {},
+                            onCompleted: (pin) {
+                              login(pin, ref, context);
+                            },
+                            enabled: !useAuth.isAuthing,
                             focusedPinTheme: defaultPinTheme.copyWith(
                               height: 68,
                               width: 64,
@@ -124,6 +127,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             ),
                           ),
                         ),
+                        if (useAuth.errorState != null)
+                          const SizedBox(
+                            height: 10,
+                          ),
                         if (useAuth.errorState != null)
                           SizedBox(
                             width: double.infinity,
