@@ -65,7 +65,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           height: 12,
                         ),
                         Text(
-                          'Welcome to the Gatego Driver app.'
+                          'Welcome to the Gatego Driver app.\n'
                           'Please log in to continue',
                           textAlign: TextAlign.center,
                         ),
