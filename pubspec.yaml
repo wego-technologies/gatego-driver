@@ -41,12 +41,12 @@ dependencies:
   hooks_riverpod: ^1.0.0
   flutter_svg: ^1.0.3
   beamer: ^1.4.0+1
-  background_location: ^0.8.1
   permission_handler: ^9.2.0
 
   here_sdk:
     path: plugins/here_sdk
   wakelock: ^0.6.1+2
+  background_location: ^0.8.1
 
 dev_dependencies:
   flutter_test:
