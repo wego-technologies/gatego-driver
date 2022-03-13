@@ -119,7 +119,7 @@ class Auth extends StateNotifier<AuthState> {
     return true;
   }
 
-  Future<void> _auth(username, passw) async {
+  Future<void> _auth(pin) async {
     final url = DebugUtils().baseUrl + "auth/login";
 
     try {
@@ -131,8 +131,7 @@ class Auth extends StateNotifier<AuthState> {
         },
         body: json.encode(
           {
-            "username": username,
-            "password": passw,
+            "pin": pin,
           },
         ),
       );
@@ -144,7 +143,7 @@ class Auth extends StateNotifier<AuthState> {
 
         tempState = tempState.copyWith(
           token: resData["jwt_token"],
-          userId: username,
+          userId: resData["driver_id"],
           errorState: null,
         );
 
@@ -227,8 +226,8 @@ class Auth extends StateNotifier<AuthState> {
     }
   }
 
-  Future<bool> signIn(String email, String passw) async {
-    if ((email.isEmpty || passw.isEmpty || passw.length < 8) && !isAuth) {
+  Future<bool> signIn(String pin) async {
+    if ((pin.isEmpty) && !isAuth) {
       state = state.copyWith(
         errorState: "Password too short",
         isAuthing: false,
@@ -237,7 +236,7 @@ class Auth extends StateNotifier<AuthState> {
     }
     state = state.copyWith(isAuthing: true);
     try {
-      await _auth(email, passw);
+      await _auth(pin);
     } catch (e) {
       state = state.copyWith(isAuthing: false, errorState: e.toString());
       rethrow;
