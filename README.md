@@ -1,2 +1,14 @@
-# Gatego Driver App
-![Frame 1(18)](https://user-images.githubusercontent.com/29983481/158024018-98b7fc06-8d73-44e3-b93a-8ae86f828fa2.png)
+The hello_map example app shows how the HERE SDK can be integrated into your Flutter project and how you can display a map.
+
+Build instructions:
+-------------------
+
+1) Set your HERE SDK credentials to
+- `hello_map/android/app/src/main/AndroidManifest.xml`
+- `hello_map/ios/Runner/Info.plist`
+
+2) Unzip the HERE SDK plugin to the plugins folder inside this project. Name the folder 'here_sdk': `hello_map/plugins/here_sdk`.
+
+3) Start an emulator or simulator and execute `flutter run` from the app's directory - or run the app from within your IDE.
+
+More information can be found in the _Get Started_ section of the _Developer's Guide_.

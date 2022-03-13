@@ -1,56 +1,52 @@
+/*
+ * Copyright (C) 2019-2022 HERE Europe B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * License-Filename: LICENSE
+ */
+
 import 'package:flutter/material.dart';
-import 'providers/providers.dart';
-import 'screens/login.dart';
-import 'screens/loc_sharing.dart';
-import 'theme/dark_theme.dart';
-import 'theme/light_theme.dart';
 import 'package:here_sdk/core.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:beamer/beamer.dart';
+import 'package:here_sdk/mapview.dart';
 
 void main() {
   SdkContext.init(IsolateOrigin.main);
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    return const ProviderScope(child: NavigationWrapper());
+    return MaterialApp(
+      title: 'HERE SDK for Flutter - Hello Map!',
+      home: HereMap(onMapCreated: _onMapCreated),
+    );
   }
-}
 
-final _routerDelegate = BeamerDelegate(
-  initialPath: "/login",
-  locationBuilder: RoutesLocationBuilder(
-    routes: {
-      '/login': (context, state, data) => const LoginPage(),
-      '/locSharing': (context, state, data) => const LocSharingPage(),
-    },
-  ),
-);
+  void _onMapCreated(HereMapController hereMapController) {
+    hereMapController.mapScene.loadSceneForMapScheme(MapScheme.normalDay, (MapError? error) {
+      if (error != null) {
+        print('Map scene not loaded. MapError: ${error.toString()}');
+        return;
+      }
 
-class NavigationWrapper extends HookConsumerWidget {
-  const NavigationWrapper({Key? key}) : super(key: key);
+      const double distanceToEarthInMeters = 8000;
+      hereMapController.camera.lookAtPointWithDistance(GeoCoordinates(52.530932, 13.384915), distanceToEarthInMeters);
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    WidgetsBinding.instance?.addPostFrameCallback(
-      (_) {
-        ref.read(authProvider.notifier).tryAutoLogin();
-        ref.read(locationProvider.notifier).checkPremission();
-      },
-    );
-
-    return MaterialApp.router(
-      routeInformationParser: BeamerParser(),
-      routerDelegate: _routerDelegate,
-      title: 'Gatego Driver',
-      theme: lightTheme(),
-      darkTheme: darkTheme(),
-    );
+      // Optionally enable textured 3D landmarks.
+      hereMapController.mapScene.setLayerVisibility(MapSceneLayers.landmarks, VisibilityState.visible);
+    });
   }
 }
