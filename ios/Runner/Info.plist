@@ -54,9 +54,10 @@
 		<string>location</string>
 	</array>
 
+<key>HERECredentials</key>
+<dict>
 	<key>AccessKeyId</key>
     <string>KWHHUYII_3RZajjuETZ31g</string>
     <key>AccessKeySecret</key>
-    <string>Wp3R0zXpQvDRN9GOPNDVE0TqY8OduNQieVfGu2xP_XnYOsSnGusE4xI1DqjZ0fjj0NK4u8hY2BGVFj2VmS_G5g</string>
-</dict>
+    <string>Wp3R0zXpQvDRN9GOPNDVE0TqY8OduNQieVfGu2xP_XnYOsSnGusE4xI1DqjZ0fjj0NK4u8hY2BGVFj2VmS_G5g</string></dict>
 </plist>
