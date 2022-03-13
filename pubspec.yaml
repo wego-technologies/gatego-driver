@@ -76,9 +76,8 @@ flutter:
   assets:
     - assets/gatego_logo.svg
     - assets/gatego_logo_dark.svg
+    - assets/dl.svg
 
-    - assets/placeholder.png
-    - assets/error.png
 
   fonts:
     - family: Inter
