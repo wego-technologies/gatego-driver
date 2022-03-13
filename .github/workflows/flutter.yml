@@ -36,8 +36,10 @@ jobs:
 
       - name: Build Android App
         run: flutter build apk
+        continue-on-error: true
         
       - name: Build iOS App
+        continue-on-error: true
         run: |
           flutter build ios --no-codesign
           cd build/ios/iphoneos
