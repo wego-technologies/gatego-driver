@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'page_transition.dart';
+
 ThemeData darkTheme() {
   return ThemeData.dark().copyWith(
     primaryColor: const Color(0xff00a1d3),
     useMaterial3: true,
+    pageTransitionsTheme: pageTransitionsTheme,
     toggleableActiveColor: const Color(0xff00a1d3),
     colorScheme: ColorScheme.fromSeed(
         seedColor: const Color(0xff00a1d3), brightness: Brightness.dark),

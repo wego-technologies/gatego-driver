@@ -250,6 +250,9 @@ class Auth extends StateNotifier<AuthState> {
     }
 
     state = state.copyWith(isAuthing: false, errorState: null);
+
+    ref.read(accountProvider.notifier).getMe();
+
     return isAuth;
   }
 

@@ -200,16 +200,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   void login(String usr, String psw, WidgetRef ref, BuildContext ctx) async {
-    final bool resLogin;
     try {
-      resLogin = await ref.read(authProvider.notifier).signIn(usr, psw);
+      await ref.read(authProvider.notifier).signIn(usr, psw);
     } catch (e) {
       return;
-    }
-
-    if (resLogin & ref.read(authProvider.notifier).isAuth) {
-      final account = await ref.read(accountProvider.notifier).getMe();
-      //if (account?.id != null) Beamer.of(ctx).beamToNamed('/locSharing');
     }
   }
 }
