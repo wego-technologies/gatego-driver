@@ -62,15 +62,12 @@ class NavigationWrapper extends HookConsumerWidget {
     );
 
     ref.listen(authProvider, (AuthState? previous, AuthState next) {
-      print(next.token);
       if (next.isAuthing) {
         return;
       }
       if (previous?.token != null && next.token == null) {
-        print("to login");
         Beamer.of(context).beamToNamed("/login");
-      } else if (next.token != null && previous?.token == null) {
-        print("to loc");
+      } else if (next.token != null && (previous?.isAuthing ?? false)) {
         Beamer.of(context).beamToNamed("/locSharing");
       }
     });

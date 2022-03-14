@@ -209,7 +209,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     if (resLogin & ref.read(authProvider.notifier).isAuth) {
       final account = await ref.read(accountProvider.notifier).getMe();
-      if (account?.id != null) Beamer.of(ctx).beamToNamed('/locSharing');
+      //if (account?.id != null) Beamer.of(ctx).beamToNamed('/locSharing');
     }
   }
 }
