@@ -92,7 +92,7 @@ class Auth extends StateNotifier<AuthState> {
     final extractedData =
         json.decode(prefs.getString("authInfo")!) as Map<String, dynamic>;
     final expiryDate = DateTime.parse(extractedData["expiryDate"]);
-    if (expiryDate.isAfter(DateTime.now())) {
+    if (expiryDate.isBefore(DateTime.now())) {
       // Get new token
       if (extractedData["username"] != null && extractedData["passw"] != null) {
         await _auth(extractedData["username"], extractedData["passw"]);
