@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../utils/create_swatch.dart';
+import 'page_transition.dart';
 
 ThemeData lightTheme() {
   return ThemeData(
       primarySwatch: genSwatch(const Color(0xff00a1d3)),
       useMaterial3: true,
+      pageTransitionsTheme: pageTransitionsTheme,
       visualDensity: VisualDensity.adaptivePlatformDensity,
       textTheme: const TextTheme(
         headline1: TextStyle(
