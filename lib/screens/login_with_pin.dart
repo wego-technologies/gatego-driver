@@ -2,11 +2,14 @@ import 'dart:math';
 
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
+import 'package:gatego_driver/widgets/login/error.dart';
 import 'package:pinput/pinput.dart';
 import '../providers/providers.dart';
 import '../widgets/common/logo.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+import '../widgets/login/header.dart';
 
 class LoginWithPinPage extends StatefulHookConsumerWidget {
   const LoginWithPinPage({Key? key}) : super(key: key);
@@ -45,191 +48,163 @@ class _LoginWithPinPageState extends ConsumerState<LoginWithPinPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Container(
-            height: max(
-                mediaQuery.size.height -
-                    mediaQuery.padding.top -
-                    mediaQuery.padding.bottom -
-                    mediaQuery.viewInsets.bottom,
-                useAuth.errorState != null ? 490 : 450),
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      Logo(
-                        width: 170,
-                      ),
-                      SizedBox(
-                        height: 12,
-                      ),
-                      Text(
-                        'Welcome to the Gatego Driver app.\n'
-                        'Please log in to continue',
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 30),
+        child: Stack(
+          children: [
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              top: 0,
+              child: SingleChildScrollView(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: AutofillGroup(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text(
-                          "Enter the unique pin that was sent to your phone.",
-                          textAlign: TextAlign.center,
-                        ),
                         const SizedBox(
-                          height: 20,
+                          height: 50,
                         ),
-                        SizedBox(
-                          height: 68,
-                          child: Pinput(
-                            length: length,
-                            controller: pinController,
-                            focusNode: pinFocusNode,
-                            defaultPinTheme: defaultPinTheme,
-                            onCompleted: (pin) {
-                              login(pin, ref, context);
-                            },
-                            enabled: !useAuth.isAuthing,
-                            focusedPinTheme: defaultPinTheme.copyWith(
-                              height: 68,
-                              width: 64,
-                              decoration: defaultPinTheme.decoration!.copyWith(
-                                border:
-                                    Border.all(color: borderColor, width: 2),
-                              ),
-                            ),
-                            errorPinTheme: defaultPinTheme.copyWith(
-                              decoration: BoxDecoration(
-                                color: errorColor,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ),
-                        ),
+                        const LoginHeader(),
                         const SizedBox(
-                          height: 10,
+                          height: 50,
                         ),
-                        TextButton.icon(
-                          onPressed: () {
-                            Beamer.of(context).beamToNamed("/login");
-                          },
-                          label: const Text("Sign in with an account"),
-                          icon: const Icon(Icons.switch_account_rounded),
-                        ),
-                        if (useAuth.errorState != null)
-                          const SizedBox(
-                            height: 10,
-                          ),
-                        if (useAuth.errorState != null)
-                          SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: Card(
-                              color:
-                                  Theme.of(context).errorColor.withAlpha(200),
-                              child: Row(
-                                children: [
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  const Icon(
-                                    Icons.warning_rounded,
-                                    color: Colors.white,
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      useAuth.errorState!,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 30),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  "Enter the unique pin that was sent to your phone.",
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                SizedBox(
+                                  height: 68,
+                                  child: Pinput(
+                                    length: length,
+                                    controller: pinController,
+                                    focusNode: pinFocusNode,
+                                    defaultPinTheme: defaultPinTheme,
+                                    onCompleted: (pin) {
+                                      login(pin, ref, context);
+                                    },
+                                    enabled: !useAuth.isAuthing,
+                                    focusedPinTheme: defaultPinTheme.copyWith(
+                                      height: 68,
+                                      width: 64,
+                                      decoration:
+                                          defaultPinTheme.decoration!.copyWith(
+                                        border: Border.all(
+                                            color: borderColor, width: 2),
+                                      ),
+                                    ),
+                                    errorPinTheme: defaultPinTheme.copyWith(
+                                      decoration: BoxDecoration(
+                                        color: errorColor,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
                                     ),
                                   ),
-                                ],
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                if (useAuth.errorState != null)
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                if (useAuth.errorState != null)
+                                  const ErrorCard(),
+                                TextButton.icon(
+                                  onPressed: () {
+                                    Beamer.of(context).beamToNamed("/login");
+                                  },
+                                  label: const Text("Sign in with an account"),
+                                  icon:
+                                      const Icon(Icons.account_circle_rounded),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 80,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    !useAuth.isAuthing
+                        ? SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              icon: Text(
+                                "Sign In",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline6
+                                    ?.copyWith(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                              ),
+                              style: ButtonStyle(
+                                padding: MaterialStateProperty.resolveWith(
+                                  (states) => const EdgeInsets.symmetric(
+                                    vertical: 13,
+                                  ),
+                                ),
+                                shape: MaterialStateProperty.resolveWith(
+                                  (states) => RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(50000),
+                                  ),
+                                ),
+                              ),
+                              onPressed: () {
+                                isLoginButton = true;
+
+                                login(pinController.text, ref, context);
+                              },
+                              label: const Icon(
+                                Icons.arrow_forward_rounded,
+                                color: Colors.white,
+                                size: 18,
                               ),
                             ),
                           )
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        const Expanded(
-                          flex: 5,
-                          child: SizedBox(),
-                        ),
-                        !useAuth.isAuthing
-                            ? SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton.icon(
-                                  icon: Text(
-                                    "Sign In",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        ?.copyWith(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold),
-                                  ),
-                                  style: ButtonStyle(
-                                    padding: MaterialStateProperty.resolveWith(
-                                      (states) => const EdgeInsets.symmetric(
-                                        vertical: 13,
-                                      ),
-                                    ),
-                                    shape: MaterialStateProperty.resolveWith(
-                                      (states) => RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(50000),
-                                      ),
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    isLoginButton = true;
-
-                                    login(pinController.text, ref, context);
-                                  },
-                                  label: const Icon(
-                                    Icons.arrow_forward_rounded,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
-                                ),
-                              )
-                            : CircularProgressIndicator(
+                        : CircleAvatar(
+                            backgroundColor: Theme.of(context).cardColor,
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: CircularProgressIndicator(
                                 color: Theme.of(context).primaryColor,
                               ),
-                        const Expanded(
-                          child: SizedBox(),
-                        ),
-                      ],
-                    ),
-                  ),
+                            ),
+                          ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
