@@ -94,8 +94,8 @@ class Auth extends StateNotifier<AuthState> {
     final expiryDate = DateTime.parse(extractedData["expiryDate"]);
     if (expiryDate.isBefore(DateTime.now())) {
       // Get new token
-      if (extractedData["username"] != null && extractedData["passw"] != null) {
-        await _auth(extractedData["username"], extractedData["passw"]);
+      if (extractedData["pin"] != null) {
+        await _auth(extractedData["pin"]);
       } else {
         state = state.copyWith(isAuthing: false);
         return false;
@@ -166,8 +166,7 @@ class Auth extends StateNotifier<AuthState> {
             "token": tempState.token,
             "userId": state.userId,
             "expiryDate": state.expiryDate!.toIso8601String(),
-            "username": username,
-            "passw": passw,
+            "pin": pin,
           });
 
           prefs.setString("authInfo", userData);
