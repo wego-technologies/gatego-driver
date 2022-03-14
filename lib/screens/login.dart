@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
-import '../providers/auth_provider.dart';
 import '../providers/providers.dart';
 import '../widgets/common/logo.dart';
 import '../widgets/common/text_input.dart';
@@ -21,11 +20,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<AuthState>(authProvider, (previous, next) {
-      if (previous!.token != null && !isLoginButton) {
-        if (mounted) context.beamToNamed("/locSharing");
-      }
-    });
     final usernameController = useTextEditingController();
     final passwordController = useTextEditingController();
     final usernameFocusNode = useFocusNode();
