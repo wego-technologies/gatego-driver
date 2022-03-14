@@ -93,7 +93,14 @@ class Auth extends StateNotifier<AuthState> {
         json.decode(prefs.getString("authInfo")!) as Map<String, dynamic>;
     final expiryDate = DateTime.parse(extractedData["expiryDate"]);
     if (expiryDate.isBefore(DateTime.now())) {
-      state = state.copyWith(isAuthing: false);
+      if (extractedData["username"] != null && extractedData["pass"] != null) {
+        await _auth(extractedData["username"], extractedData["passw"]);
+        if (isAuth) {
+          await ref
+              .read(accountProvider.notifier)
+              .getMe(token: extractedData["token"]);
+        }
+      }
       return false;
     }
     /*_token = extractedData["token"];
@@ -163,6 +170,8 @@ class Auth extends StateNotifier<AuthState> {
             "token": tempState.token,
             "userId": state.userId,
             "expiryDate": state.expiryDate!.toIso8601String(),
+            "username": username,
+            "passw": passw,
           });
 
           prefs.setString("authInfo", userData);
