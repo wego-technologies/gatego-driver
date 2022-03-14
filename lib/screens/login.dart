@@ -1,13 +1,9 @@
 import 'dart:math';
 
-import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pinput/pinput.dart';
-import '../providers/auth_provider.dart';
 import '../providers/providers.dart';
 import '../widgets/common/logo.dart';
-import '../widgets/common/text_input.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -23,11 +19,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<AuthState>(authProvider, (previous, next) {
-      if (previous!.token != null && !isLoginButton) {
-        if (mounted) context.beamToNamed("/locSharing");
-      }
-    });
     final pinController = useTextEditingController();
     final pinFocusNode = useFocusNode();
 
@@ -242,7 +233,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     if (resLogin & ref.read(authProvider.notifier).isAuth) {
       final account = await ref.read(accountProvider.notifier).getMe();
-      if (account?.id != null) Beamer.of(ctx).beamToNamed('/locSharing');
+      //if (account?.id != null) Beamer.of(ctx).beamToNamed('/locSharing');
     }
   }
 }
