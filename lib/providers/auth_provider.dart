@@ -261,15 +261,7 @@ class Auth extends StateNotifier<AuthState> {
       state.refreshTimer!.cancel();
     }
 
-    state = state.copyWith(
-      token: null,
-      expiryDate: null,
-      userId: null,
-      authTimer: null,
-      errorState: null,
-      isAuthing: false,
-      refreshTimer: null,
-    );
+    state = AuthState();
 
     clearData();
 
