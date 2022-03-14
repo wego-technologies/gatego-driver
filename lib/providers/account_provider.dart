@@ -11,14 +11,8 @@ import '../models/driver.dart';
 import '../models/organization.dart';
 import '../utils/debug_mode.dart';
 
-class AccountState {
-  Account? account;
-
-  AccountState(account);
-}
-
-class AccountProvider extends StateNotifier<AccountState> {
-  AccountProvider(this.ref) : super(AccountState(null));
+class AccountProvider extends StateNotifier<Account?> {
+  AccountProvider(this.ref) : super(null);
   final Ref ref;
 
   Future<Account?> getMe({String? token}) async {
@@ -27,7 +21,7 @@ class AccountProvider extends StateNotifier<AccountState> {
     /*if (retryTimer != null) {
       retryTimer.cancel();
     }*/
-    if (token != null && state.account == null) {
+    if (token != null && state == null) {
       final url = DebugUtils().baseUrl + "api/account/me";
 
       try {
@@ -49,7 +43,7 @@ class AccountProvider extends StateNotifier<AccountState> {
             _deletedAt = DateTime.tryParse(resData["deleted_at"]);
           }
 
-          state.account = Account(
+          state = Account(
             active: resData["active"],
             canViewCarrierIds: resData["can_view_carrier_ids"],
             role: stringToRole(resData["role"]),
@@ -65,7 +59,7 @@ class AccountProvider extends StateNotifier<AccountState> {
           );
         }
 
-        return state.account;
+        return state;
       } catch (e) {
         /*print("Trying to reconnet");
         retryTimer = Timer(
@@ -81,7 +75,7 @@ class AccountProvider extends StateNotifier<AccountState> {
   }
 
   get me {
-    return state.account;
+    return state;
   }
 
   Carrier? genCarrier(data) {
@@ -126,6 +120,6 @@ class AccountProvider extends StateNotifier<AccountState> {
   }
 
   void clear() {
-    state.account = null;
+    state = null;
   }
 }
