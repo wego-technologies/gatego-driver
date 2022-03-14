@@ -9,7 +9,7 @@ class UserModalCard extends HookConsumerWidget {
   const UserModalCard({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final account = ref.watch(accountProvider).account;
+    final account = ref.watch(accountProvider);
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Column(

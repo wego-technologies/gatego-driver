@@ -93,33 +93,27 @@ class Auth extends StateNotifier<AuthState> {
         json.decode(prefs.getString("authInfo")!) as Map<String, dynamic>;
     final expiryDate = DateTime.parse(extractedData["expiryDate"]);
     if (expiryDate.isAfter(DateTime.now())) {
+      // Get new token
       if (extractedData["username"] != null && extractedData["passw"] != null) {
         await _auth(extractedData["username"], extractedData["passw"]);
-        if (isAuth) {
-          await ref.read(accountProvider.notifier).getMe(token: state.token);
-          state = state.copyWith(isAuthing: false);
-          return true;
-        }
+      } else {
         state = state.copyWith(isAuthing: false);
         return false;
       }
-      state = state.copyWith(isAuthing: false);
-      return false;
+    } else {
+      // Use current token
+      state = state.copyWith(
+        token: extractedData["token"],
+        userId: extractedData["userId"],
+        expiryDate: expiryDate,
+      );
     }
     /*_token = extractedData["token"];
     _userId = extractedData["userId"];
     _expiryDate = expiryDate;
     notifyListeners();*/
 
-    await ref
-        .read(accountProvider.notifier)
-        .getMe(token: extractedData["token"]);
-
-    state = state.copyWith(
-      token: extractedData["token"],
-      userId: extractedData["userId"],
-      expiryDate: expiryDate,
-    );
+    await ref.read(accountProvider.notifier).getMe();
 
     _autoLogout();
     _autoRefreshToken();
