@@ -96,9 +96,7 @@ class Auth extends StateNotifier<AuthState> {
       if (extractedData["username"] != null && extractedData["passw"] != null) {
         await _auth(extractedData["username"], extractedData["passw"]);
         if (isAuth) {
-          await ref
-              .read(accountProvider.notifier)
-              .getMe(token: extractedData["token"]);
+          await ref.read(accountProvider.notifier).getMe(token: state.token);
           state = state.copyWith(isAuthing: false);
           return true;
         }
