@@ -11,7 +11,7 @@ class AppBarCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final accountProv = ref.watch(accountProvider).account;
+    final accountProv = ref.watch(accountProvider);
     return Card(
       margin: const EdgeInsets.all(15),
       child: SizedBox(

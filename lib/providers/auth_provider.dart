@@ -93,23 +93,27 @@ class Auth extends StateNotifier<AuthState> {
         json.decode(prefs.getString("authInfo")!) as Map<String, dynamic>;
     final expiryDate = DateTime.parse(extractedData["expiryDate"]);
     if (expiryDate.isBefore(DateTime.now())) {
-      state = state.copyWith(isAuthing: false);
-      return false;
+      // Get new token
+      if (extractedData["username"] != null && extractedData["passw"] != null) {
+        await _auth(extractedData["username"], extractedData["passw"]);
+      } else {
+        state = state.copyWith(isAuthing: false);
+        return false;
+      }
+    } else {
+      // Use current token
+      state = state.copyWith(
+        token: extractedData["token"],
+        userId: extractedData["userId"],
+        expiryDate: expiryDate,
+      );
     }
     /*_token = extractedData["token"];
     _userId = extractedData["userId"];
     _expiryDate = expiryDate;
     notifyListeners();*/
 
-    await ref
-        .read(accountProvider.notifier)
-        .getMe(token: extractedData["token"]);
-
-    state = state.copyWith(
-      token: extractedData["token"],
-      userId: extractedData["userId"],
-      expiryDate: expiryDate,
-    );
+    await ref.read(accountProvider.notifier).getMe();
 
     _autoLogout();
     _autoRefreshToken();
@@ -162,6 +166,8 @@ class Auth extends StateNotifier<AuthState> {
             "token": tempState.token,
             "userId": state.userId,
             "expiryDate": state.expiryDate!.toIso8601String(),
+            "username": username,
+            "passw": passw,
           });
 
           prefs.setString("authInfo", userData);
@@ -254,7 +260,7 @@ class Auth extends StateNotifier<AuthState> {
       state.refreshTimer!.cancel();
     }
 
-    state = state.copyWith(token: null, expiryDate: null, userId: null);
+    state = AuthState();
 
     clearData();
 
