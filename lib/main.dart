@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gatego_driver/providers/auth_provider.dart';
 import 'providers/providers.dart';
 import 'screens/login.dart';
 import 'screens/loc_sharing.dart';
@@ -19,19 +20,34 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const ProviderScope(child: NavigationWrapper());
+    return const ProviderScope(child: AppWrapper());
   }
 }
 
-final _routerDelegate = BeamerDelegate(
-  initialPath: "/login",
-  locationBuilder: RoutesLocationBuilder(
-    routes: {
-      '/login': (context, state, data) => const LoginPage(),
-      '/locSharing': (context, state, data) => const LocSharingPage(),
-    },
+final Provider<BeamerDelegate> beamerDelegateProvider =
+    Provider<BeamerDelegate>(
+  (ref) => BeamerDelegate(
+    initialPath: "/login",
+    locationBuilder: RoutesLocationBuilder(
+      routes: {
+        '/login': (context, state, data) => const LoginPage(),
+        '/locSharing': (context, state, data) => const LocSharingPage(),
+      },
+    ),
   ),
 );
+
+class AppWrapper extends HookConsumerWidget {
+  const AppWrapper({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return BeamerProvider(
+      routerDelegate: ref.read(beamerDelegateProvider),
+      child: const NavigationWrapper(),
+    );
+  }
+}
 
 class NavigationWrapper extends HookConsumerWidget {
   const NavigationWrapper({Key? key}) : super(key: key);
@@ -45,9 +61,23 @@ class NavigationWrapper extends HookConsumerWidget {
       },
     );
 
+    ref.listen(authProvider, (AuthState? previous, AuthState next) {
+      print(next.token);
+      if (next.isAuthing) {
+        return;
+      }
+      if (previous?.token != null && next.token == null) {
+        print("to login");
+        Beamer.of(context).beamToNamed("/login");
+      } else if (next.token != null && previous?.token == null) {
+        print("to loc");
+        Beamer.of(context).beamToNamed("/locSharing");
+      }
+    });
+
     return MaterialApp.router(
       routeInformationParser: BeamerParser(),
-      routerDelegate: _routerDelegate,
+      routerDelegate: ref.watch(beamerDelegateProvider),
       title: 'Gatego Driver',
       theme: lightTheme(),
       darkTheme: darkTheme(),

@@ -1,4 +1,3 @@
-import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:gatego_driver/providers/providers.dart';
 import 'package:gatego_driver/utils/string_to_role.dart';
@@ -53,7 +52,7 @@ class UserModalCard extends HookConsumerWidget {
               TextButton.icon(
                 onPressed: () async {
                   await ref.read(authProvider.notifier).logout();
-                  Beamer.of(context).beamToNamed("/login");
+                  //Beamer.of(context).beamToNamed("/login");
                 },
                 icon: const Icon(Icons.logout_rounded),
                 label: const Text("Sign Out"),
