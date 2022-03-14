@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:gatego_driver/providers/auth_provider.dart';
+import 'providers/auth_provider.dart';
 import 'providers/providers.dart';
-import 'screens/login.dart';
+import 'screens/login_with_account.dart';
+import 'screens/login_with_pin.dart';
 import 'screens/loc_sharing.dart';
 import 'theme/dark_theme.dart';
 import 'theme/light_theme.dart';
@@ -30,6 +31,7 @@ final Provider<BeamerDelegate> beamerDelegateProvider =
     initialPath: "/login",
     locationBuilder: RoutesLocationBuilder(
       routes: {
+        '/loginWithPin': (context, state, data) => const LoginWithPinPage(),
         '/login': (context, state, data) => const LoginPage(),
         '/locSharing': (context, state, data) => const LocSharingPage(),
       },

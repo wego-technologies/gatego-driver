@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import '../providers/providers.dart';
@@ -7,14 +8,15 @@ import '../widgets/common/logo.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class LoginPage extends StatefulHookConsumerWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class LoginWithPinPage extends StatefulHookConsumerWidget {
+  const LoginWithPinPage({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _LoginPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _LoginWithPinPageState();
 }
 
-class _LoginPageState extends ConsumerState<LoginPage> {
+class _LoginWithPinPageState extends ConsumerState<LoginWithPinPage> {
   var isLoginButton = false;
 
   @override
@@ -117,6 +119,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               ),
                             ),
                           ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        TextButton.icon(
+                          onPressed: () {
+                            Beamer.of(context).beamToNamed("/login");
+                          },
+                          label: const Text("Sign in with an account"),
+                          icon: const Icon(Icons.switch_account_rounded),
                         ),
                         if (useAuth.errorState != null)
                           const SizedBox(
@@ -225,7 +237,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   void login(String pin, WidgetRef ref, BuildContext ctx) async {
     try {
-      await ref.read(authProvider.notifier).signIn(pin);
+      await ref.read(authProvider.notifier).signInWithPin(pin);
     } catch (e) {
       return;
     }

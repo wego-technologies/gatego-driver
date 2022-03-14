@@ -95,7 +95,7 @@ class Auth extends StateNotifier<AuthState> {
     if (expiryDate.isBefore(DateTime.now())) {
       // Get new token
       if (extractedData["pin"] != null) {
-        await _auth(extractedData["pin"]);
+        await _authPin(extractedData["pin"]);
       } else {
         state = state.copyWith(isAuthing: false);
         return false;
@@ -123,7 +123,7 @@ class Auth extends StateNotifier<AuthState> {
     return true;
   }
 
-  Future<void> _auth(pin) async {
+  Future<void> _authPin(pin) async {
     final url = DebugUtils().baseUrl + "auth/login";
 
     try {
@@ -167,6 +167,67 @@ class Auth extends StateNotifier<AuthState> {
             "userId": state.userId,
             "expiryDate": state.expiryDate!.toIso8601String(),
             "pin": pin,
+          });
+
+          prefs.setString("authInfo", userData);
+        } else {
+          throw "No token recieved";
+        }
+      } else {
+        final resData = json.decode(res.body);
+        throw (res.statusCode.toString() + ": " + resData["error_code"]);
+      }
+    } catch (err) {
+      rethrow;
+    }
+  }
+
+  Future<void> _auth(username, passw) async {
+    final url = DebugUtils().baseUrl + "auth/login";
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Accept": "application/json",
+          "content-type": "application/json"
+        },
+        body: json.encode(
+          {
+            "username": username,
+            "password": passw,
+          },
+        ),
+      );
+
+      if (res.statusCode == 200) {
+        final resData = json.decode(res.body);
+
+        var tempState = state;
+
+        tempState = tempState.copyWith(
+          token: resData["jwt_token"],
+          userId: username,
+          errorState: null,
+        );
+
+        if (tempState.token != null) {
+          tempState = tempState.copyWith(
+            expiryDate: JwtDecoder.getExpirationDate(tempState.token!),
+          );
+
+          state = tempState;
+
+          _autoLogout();
+          _autoRefreshToken();
+
+          final prefs = await SharedPreferences.getInstance();
+          final userData = json.encode({
+            "token": tempState.token,
+            "userId": state.userId,
+            "expiryDate": state.expiryDate!.toIso8601String(),
+            "username": username,
+            "passw": passw,
           });
 
           prefs.setString("authInfo", userData);
@@ -231,7 +292,30 @@ class Auth extends StateNotifier<AuthState> {
     }
   }
 
-  Future<bool> signIn(String pin) async {
+  Future<bool> signIn(String email, String passw) async {
+    if ((email.isEmpty || passw.isEmpty || passw.length < 8) && !isAuth) {
+      state = state.copyWith(
+        errorState: "Password too short",
+        isAuthing: false,
+      );
+      return false;
+    }
+    state = state.copyWith(isAuthing: true);
+    try {
+      await _auth(email, passw);
+    } catch (e) {
+      state = state.copyWith(isAuthing: false, errorState: e.toString());
+      rethrow;
+    }
+
+    state = state.copyWith(isAuthing: false, errorState: null);
+
+    ref.read(accountProvider.notifier).getMe();
+
+    return isAuth;
+  }
+
+  Future<bool> signInWithPin(String pin) async {
     if ((pin.isEmpty) && !isAuth) {
       state = state.copyWith(
         errorState: "Password too short",
@@ -241,7 +325,7 @@ class Auth extends StateNotifier<AuthState> {
     }
     state = state.copyWith(isAuthing: true);
     try {
-      await _auth(pin);
+      await _authPin(pin);
     } catch (e) {
       state = state.copyWith(isAuthing: false, errorState: e.toString());
       rethrow;
