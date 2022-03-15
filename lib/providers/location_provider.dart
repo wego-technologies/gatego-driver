@@ -9,6 +9,7 @@ import 'package:beamer/beamer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gatego_driver/theme/light_theme.dart';
+import 'package:gatego_driver/widgets/common/location_access_expl.dart';
 import 'package:here_sdk/core.dart' as here_core;
 import 'package:here_sdk/core.errors.dart';
 import 'package:here_sdk/mapview.dart' as here_map;
@@ -154,41 +155,47 @@ class LocationProvider extends StateNotifier<LocationState> {
 
   Future<void> launchPermission(BuildContext context) async {
     final status = await Permission.locationWhenInUse.request();
-    if (status.isPermanentlyDenied) {
-      showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text("Access to Location"),
-              content: const Text(
-                  "It seems you have permanently denied gatego access to your location."
-                  " To be able to track your drive we need permission to access it."
-                  " Click the button below to open the settings, then change the location"
-                  " permission to 'While in Use'"),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    openAppSettings();
-                    Beamer.of(context).popRoute();
-                  },
-                  child: const Text("Open App Settings"),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Beamer.of(context).popRoute();
-                  },
-                  child: const Text("Close"),
-                ),
-              ],
-            );
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return LocationAccessCard(callback: () {
+            if (status.isPermanentlyDenied) {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("Access to Location"),
+                      content: const Text(
+                          "It seems you have permanently denied gatego access to your location."
+                          " To be able to track your drive we need permission to access it."
+                          " Click the button below to open the settings, then change the location"
+                          " permission to 'While in Use'"),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            openAppSettings();
+                            Beamer.of(context).popRoute();
+                          },
+                          child: const Text("Open App Settings"),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Beamer.of(context).popRoute();
+                          },
+                          child: const Text("Close"),
+                        ),
+                      ],
+                    );
+                  });
+              state = state.copyWith(isPermissionGranted: false);
+            } else if (status.isGranted || status.isLimited) {
+              state = state.copyWith(isPermissionGranted: true);
+              beginTracking();
+            } else {
+              state = state.copyWith(isPermissionGranted: false);
+            }
           });
-      state = state.copyWith(isPermissionGranted: false);
-    } else if (status.isGranted || status.isLimited) {
-      state = state.copyWith(isPermissionGranted: true);
-      beginTracking();
-    } else {
-      state = state.copyWith(isPermissionGranted: false);
-    }
+        });
   }
 
   Future<void> beginTracking() async {
