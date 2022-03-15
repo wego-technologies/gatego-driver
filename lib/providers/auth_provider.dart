@@ -96,6 +96,9 @@ class Auth extends StateNotifier<AuthState> {
       // Get new token
       if (extractedData["pin"] != null) {
         await _authPin(extractedData["pin"]);
+      } else if (extractedData["username"] != null &&
+          extractedData["passw"] != null) {
+        await _auth(extractedData["username"], extractedData["passw"]);
       } else {
         state = state.copyWith(isAuthing: false);
         return false;
