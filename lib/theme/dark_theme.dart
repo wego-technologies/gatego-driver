@@ -6,6 +6,7 @@ ThemeData darkTheme() {
   return ThemeData.dark().copyWith(
     primaryColor: const Color(0xff00a1d3),
     useMaterial3: true,
+    androidOverscrollIndicator: AndroidOverscrollIndicator.stretch,
     pageTransitionsTheme: pageTransitionsTheme,
     toggleableActiveColor: const Color(0xff00a1d3),
     colorScheme: ColorScheme.fromSeed(

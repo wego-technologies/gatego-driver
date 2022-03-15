@@ -162,7 +162,7 @@ class LocationProvider extends StateNotifier<LocationState> {
             topRight: Radius.circular(15),
           ),
         ),
-        builder: (context) {
+        builder: (_) {
           return LocationAccessCard(callback: () async {
             Beamer.of(context).popRoute();
             final status = await Permission.locationWhenInUse.request();
