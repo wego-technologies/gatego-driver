@@ -10,7 +10,11 @@ class TrackingStatusCard extends HookConsumerWidget {
     final locationStateNotifier = ref.read(locationProvider.notifier);
 
     if (locationState.isAwaitingPermissions) {
-      locationStateNotifier.checkPremission();
+      locationStateNotifier.checkPremission().then((value) {
+        if (!value) {
+          locationStateNotifier.launchPermission(context);
+        }
+      });
     }
     return Card(
       margin: const EdgeInsets.all(15),

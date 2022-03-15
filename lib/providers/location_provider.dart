@@ -162,6 +162,8 @@ class LocationProvider extends StateNotifier<LocationState> {
             topRight: Radius.circular(15),
           ),
         ),
+        isDismissible: false,
+        //isScrollControlled: true,
         builder: (_) {
           return LocationAccessCard(callback: () async {
             Beamer.of(context).popRoute();
@@ -198,7 +200,6 @@ class LocationProvider extends StateNotifier<LocationState> {
               state = state.copyWith(isPermissionGranted: false);
             } else if (status.isGranted || status.isLimited) {
               state = state.copyWith(isPermissionGranted: true);
-              beginTracking();
             } else {
               state = state.copyWith(isPermissionGranted: false);
             }
