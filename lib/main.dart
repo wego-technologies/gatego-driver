@@ -59,7 +59,6 @@ class NavigationWrapper extends HookConsumerWidget {
     WidgetsBinding.instance?.addPostFrameCallback(
       (_) {
         ref.read(authProvider.notifier).tryAutoLogin();
-        ref.read(locationProvider.notifier).checkPremission();
       },
     );
 

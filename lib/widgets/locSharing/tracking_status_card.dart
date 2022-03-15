@@ -8,6 +8,10 @@ class TrackingStatusCard extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final locationState = ref.watch(locationProvider);
     final locationStateNotifier = ref.read(locationProvider.notifier);
+
+    if (locationState.isAwaitingPermissions) {
+      locationStateNotifier.checkPremission();
+    }
     return Card(
       margin: const EdgeInsets.all(15),
       child: SizedBox(
@@ -43,7 +47,11 @@ class TrackingStatusCard extends HookConsumerWidget {
                 icon: Icon(locationState.isLocating
                     ? Icons.stop_rounded
                     : Icons.play_arrow_rounded),
-                label: Text(locationState.isLocating ? "Stop" : "Start"),
+                label: Text(locationState.isAwaitingPermissions
+                    ? "Wait..."
+                    : locationState.isLocating
+                        ? "Stop"
+                        : "Start"),
               ),
             ],
           ),
