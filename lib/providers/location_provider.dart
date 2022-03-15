@@ -156,7 +156,12 @@ class LocationProvider extends StateNotifier<LocationState> {
   Future<void> launchPermission(BuildContext context) async {
     showModalBottomSheet(
         context: context,
-        
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(15),
+            topRight: Radius.circular(15),
+          ),
+        ),
         builder: (context) {
           return LocationAccessCard(callback: () async {
             Beamer.of(context).popRoute();

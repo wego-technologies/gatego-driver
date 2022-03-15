@@ -58,7 +58,7 @@ class LocationAccessCard extends StatelessWidget {
               "https://cloud.gatego.io/privacy-policy",
             ),
             const SizedBox(
-              height: 20,
+              height: 30,
             ),
             SizedBox(
               width: double.infinity,
