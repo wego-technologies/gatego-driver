@@ -1,0 +1,3 @@
+[submodule "plugins/here_sdk"]
+	path = plugins/here_sdk
+	url = https://github.com/wego-technologies/here_sdk/
