@@ -35,13 +35,15 @@ jobs:
       - name: Install pub Dependencies
         run: flutter pub get
 
-      - name: Flutter doctor
-        run: flutter doctor -v
-
       - name: "Select the latest stable Xcode 12"
         uses: devbotsxyz/xcode-select@v1
         with:
            version: "13.0"
+
+      - run: flutter doctor --android-licenses
+
+      - name: Flutter doctor
+        run: flutter doctor -v
         
       - name: Build iOS App
         continue-on-error: true
