@@ -154,11 +154,14 @@ class LocationProvider extends StateNotifier<LocationState> {
   }
 
   Future<void> launchPermission(BuildContext context) async {
-    final status = await Permission.locationWhenInUse.request();
     showModalBottomSheet(
         context: context,
+        
         builder: (context) {
-          return LocationAccessCard(callback: () {
+          return LocationAccessCard(callback: () async {
+            Beamer.of(context).popRoute();
+            final status = await Permission.locationWhenInUse.request();
+
             if (status.isPermanentlyDenied) {
               showDialog(
                   context: context,
