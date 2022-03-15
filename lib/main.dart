@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
 final Provider<BeamerDelegate> beamerDelegateProvider =
     Provider<BeamerDelegate>(
   (ref) => BeamerDelegate(
-    initialPath: "/login",
+    initialPath: "/loginWithPin",
     locationBuilder: RoutesLocationBuilder(
       routes: {
         '/loginWithPin': (context, state, data) => const LoginWithPinPage(),
@@ -67,7 +67,7 @@ class NavigationWrapper extends HookConsumerWidget {
         return;
       }
       if (previous?.token != null && next.token == null) {
-        Beamer.of(context).beamToNamed("/login");
+        Beamer.of(context).beamToNamed("/loginWithPin");
       } else if (next.token != null && (previous?.isAuthing ?? false)) {
         Beamer.of(context).beamToNamed("/locSharing");
       }
