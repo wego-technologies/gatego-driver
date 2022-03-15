@@ -17,12 +17,6 @@ jobs:
         
       - name: Checkout repository
         uses: actions/checkout@v3.0.0
-        
-      - name: Set up Java
-        uses: actions/setup-java@v3.0.0
-        with:
-          java-version: '15'
-          distribution: 'adopt'
           
       - name: Set up Flutter
         uses: subosito/flutter-action@v2.3.0
@@ -39,8 +33,6 @@ jobs:
         uses: devbotsxyz/xcode-select@v1
         with:
            version: "13.0"
-
-      - run: flutter doctor --android-licenses
 
       - name: Flutter doctor
         run: flutter doctor -v
