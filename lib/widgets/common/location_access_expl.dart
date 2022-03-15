@@ -54,7 +54,7 @@ class LocationAccessCard extends StatelessWidget {
             const Text(
               "By clicking below you are acknowledging that you allow gatego"
               " to collect this data in accordance to our privacy policy."
-              "Our privacy policy is available at "
+              " Our privacy policy is available at "
               "https://cloud.gatego.io/privacy-policy",
             ),
             const SizedBox(
