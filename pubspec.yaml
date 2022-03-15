@@ -48,6 +48,7 @@ dependencies:
   wakelock: ^0.6.1+2
   background_location: ^0.8.1
   pinput: ^2.1.4
+  intl_phone_number_input: ^0.7.0+2
 
 dev_dependencies:
   flutter_test:

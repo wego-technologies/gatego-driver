@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
-class TextInput extends StatefulWidget {
+class PhoneInput extends StatefulWidget {
   final void Function(String)? setData;
   final TextEditingController c;
   final IconData? icon;
@@ -10,7 +11,7 @@ class TextInput extends StatefulWidget {
   final void Function(String)? nextFocus;
   final bool enabled;
   final List<String>? autofillHints;
-  const TextInput({
+  const PhoneInput({
     this.autofillHints,
     this.setData,
     this.icon,
@@ -24,10 +25,10 @@ class TextInput extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _TextInputState createState() => _TextInputState();
+  _PhoneInputState createState() => _PhoneInputState();
 }
 
-class _TextInputState extends State<TextInput> {
+class _PhoneInputState extends State<PhoneInput> {
   late Color colorIcon;
   late Color colorShadow;
 
@@ -75,6 +76,8 @@ class _TextInputState extends State<TextInput> {
     }
   }
 
+  var internalNumber = "";
+
   @override
   Widget build(BuildContext context) {
     const padding = 8.0;
@@ -120,39 +123,43 @@ class _TextInputState extends State<TextInput> {
                   const SizedBox(
                     width: 10,
                   ),
-                  Icon(
-                    widget.icon,
-                    size: 15,
-                    color: colorIcon,
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
                   Expanded(
                     child: ClipRRect(
                       borderRadius: const BorderRadius.horizontal(
                           right: Radius.circular(15)),
-                      child: TextField(
-                        enabled: widget.enabled,
-                        controller: widget.c,
+                      child: InternationalPhoneNumberInput(
+                        onInputChanged: (value) {
+                          if (widget.setData != null) {
+                            widget.setData!(value.phoneNumber ?? "");
+                            internalNumber = value.phoneNumber ?? "";
+                          }
+                        },
+                        countries: const ["US", "CA", "MX"],
+                        //enabled: widget.enabled,
+                        //controller: widget.c,
                         focusNode: widget.fn,
-                        obscureText: widget.obscureText,
-                        onSubmitted: widget.nextFocus,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.text,
-                        onChanged: widget.setData,
+                        onSubmit: () {
+                          if (widget.nextFocus != null) {
+                            widget.nextFocus!(internalNumber);
+                          }
+                        },
+                        textFieldController: widget.c,
+
+                        onFieldSubmitted: widget.nextFocus,
+                        //obscureText: widget.obscureText,
+                        //onSubmitted: widget.nextFocus,
+                        //PhoneInputAction: PhoneInputAction.next,
+                        keyboardType: TextInputType.number,
+                        //onChanged: widget.setData,
                         autofillHints: widget.autofillHints,
-                        decoration: InputDecoration(
+                        inputBorder: InputBorder.none,
+                        inputDecoration: InputDecoration(
                           //fillColor: Color(0xfff5f5f5),
                           focusColor: const Color(0xfff5f5f5),
                           hoverColor: const Color(0xfff5f5f5),
                           //filled: true,
                           border: InputBorder.none,
                           hintText: widget.text,
-                          hintStyle: const TextStyle(
-                              //color: Color(0xff727272),
-                              // fontWeight: FontWeight.w300,
-                              fontSize: 13),
                         ),
                       ),
                     ),

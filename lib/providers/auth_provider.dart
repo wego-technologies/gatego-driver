@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+
 import 'providers.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -94,8 +96,8 @@ class Auth extends StateNotifier<AuthState> {
     final expiryDate = DateTime.parse(extractedData["expiryDate"]);
     if (expiryDate.isBefore(DateTime.now())) {
       // Get new token
-      if (extractedData["pin"] != null) {
-        await _authPin(extractedData["pin"]);
+      if (extractedData["pin"] != null && extractedData["phone"]) {
+        await _authPin(extractedData["phone"], extractedData["pin"]);
       } else if (extractedData["username"] != null &&
           extractedData["passw"] != null) {
         await _auth(extractedData["username"], extractedData["passw"]);
@@ -126,7 +128,7 @@ class Auth extends StateNotifier<AuthState> {
     return true;
   }
 
-  Future<void> _authPin(pin) async {
+  Future<void> _authPin(phone, pin) async {
     final url = DebugUtils().baseUrl + "auth/login";
 
     try {
@@ -138,6 +140,7 @@ class Auth extends StateNotifier<AuthState> {
         },
         body: json.encode(
           {
+            "username": phone,
             "pin": pin,
           },
         ),
@@ -170,6 +173,7 @@ class Auth extends StateNotifier<AuthState> {
             "userId": state.userId,
             "expiryDate": state.expiryDate!.toIso8601String(),
             "pin": pin,
+            "phone": phone,
           });
 
           prefs.setString("authInfo", userData);
@@ -177,8 +181,8 @@ class Auth extends StateNotifier<AuthState> {
           throw "No token recieved";
         }
       } else {
-        final resData = json.decode(res.body);
-        throw (res.statusCode.toString() + ": " + resData["error_code"]);
+        //final resData = json.decode(res.body);
+        throw ("Incorrect phone number or pin.");
       }
     } catch (err) {
       rethrow;
@@ -239,7 +243,7 @@ class Auth extends StateNotifier<AuthState> {
         }
       } else {
         final resData = json.decode(res.body);
-        throw (res.statusCode.toString() + ": " + resData["error_code"]);
+        throw ("Incorrect email or password.");
       }
     } catch (err) {
       rethrow;
@@ -318,17 +322,17 @@ class Auth extends StateNotifier<AuthState> {
     return isAuth;
   }
 
-  Future<bool> signInWithPin(String pin) async {
-    if ((pin.isEmpty) && !isAuth) {
+  Future<bool> signInWithPin(String phone, String pin) async {
+    if ((pin.isEmpty || pin.length < 6) && !isAuth) {
       state = state.copyWith(
-        errorState: "Password too short",
+        errorState: "Please fill in the pin",
         isAuthing: false,
       );
       return false;
     }
     state = state.copyWith(isAuthing: true);
     try {
-      await _authPin(pin);
+      await _authPin(phone, pin);
     } catch (e) {
       state = state.copyWith(isAuthing: false, errorState: e.toString());
       rethrow;

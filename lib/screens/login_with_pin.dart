@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
+import 'package:gatego_driver/widgets/common/phone_input.dart';
 import 'package:gatego_driver/widgets/login/error.dart';
 import 'package:pinput/pinput.dart';
 import '../providers/providers.dart';
@@ -26,15 +27,16 @@ class _LoginWithPinPageState extends ConsumerState<LoginWithPinPage> {
   Widget build(BuildContext context) {
     final pinController = useTextEditingController();
     final pinFocusNode = useFocusNode();
+    final numberController = useTextEditingController();
+    final numberFocusNode = useFocusNode();
 
     final useAuth = ref.watch(authProvider);
     ref.watch(authProvider.notifier);
-    final mediaQuery = MediaQuery.of(context);
 
     const length = 6;
     var borderColor = Theme.of(context).primaryColor;
     var errorColor = Theme.of(context).errorColor.withAlpha(50);
-    var fillColor = Theme.of(context).canvasColor;
+    var fillColor = Theme.of(context).cardColor;
     final defaultPinTheme = PinTheme(
       width: 56,
       height: 60,
@@ -76,16 +78,36 @@ class _LoginWithPinPageState extends ConsumerState<LoginWithPinPage> {
                                 horizontal: 12, vertical: 30),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  "Enter the unique pin that was sent to your phone.",
-                                  textAlign: TextAlign.center,
+                                PhoneInput(
+                                  text: "Phone Number",
+                                  c: numberController,
+                                  fn: numberFocusNode,
+                                  autofillHints: const [
+                                    AutofillHints.telephoneNumber
+                                  ],
+                                  nextFocus: (_) {
+                                    pinFocusNode.requestFocus();
+                                  },
                                 ),
                                 const SizedBox(
-                                  height: 20,
+                                  height: 10,
                                 ),
-                                SizedBox(
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: Text(
+                                    "Pin",
+                                    style:
+                                        Theme.of(context).textTheme.bodyText1,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
                                   height: 68,
                                   child: Pinput(
                                     length: length,
@@ -93,7 +115,8 @@ class _LoginWithPinPageState extends ConsumerState<LoginWithPinPage> {
                                     focusNode: pinFocusNode,
                                     defaultPinTheme: defaultPinTheme,
                                     onCompleted: (pin) {
-                                      login(pin, ref, context);
+                                      login(pin, numberController.text, ref,
+                                          context);
                                     },
                                     enabled: !useAuth.isAuthing,
                                     focusedPinTheme: defaultPinTheme.copyWith(
@@ -122,13 +145,17 @@ class _LoginWithPinPageState extends ConsumerState<LoginWithPinPage> {
                                   ),
                                 if (useAuth.errorState != null)
                                   const ErrorCard(),
-                                TextButton.icon(
-                                  onPressed: () {
-                                    Beamer.of(context).beamToNamed("/login");
-                                  },
-                                  label: const Text("Sign in with an account"),
-                                  icon:
-                                      const Icon(Icons.account_circle_rounded),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: TextButton.icon(
+                                    onPressed: () {
+                                      Beamer.of(context).beamToNamed("/login");
+                                    },
+                                    label:
+                                        const Text("Sign in with an account"),
+                                    icon: const Icon(
+                                        Icons.account_circle_rounded),
+                                  ),
                                 ),
                               ],
                             ),
@@ -182,7 +209,8 @@ class _LoginWithPinPageState extends ConsumerState<LoginWithPinPage> {
                               onPressed: () {
                                 isLoginButton = true;
 
-                                login(pinController.text, ref, context);
+                                login(pinController.text, numberController.text,
+                                    ref, context);
                               },
                               label: const Icon(
                                 Icons.arrow_forward_rounded,
@@ -210,9 +238,9 @@ class _LoginWithPinPageState extends ConsumerState<LoginWithPinPage> {
     );
   }
 
-  void login(String pin, WidgetRef ref, BuildContext ctx) async {
+  void login(String pin, String phone, WidgetRef ref, BuildContext ctx) async {
     try {
-      await ref.read(authProvider.notifier).signInWithPin(pin);
+      await ref.read(authProvider.notifier).signInWithPin(phone, pin);
     } catch (e) {
       return;
     }
