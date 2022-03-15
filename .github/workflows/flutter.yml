@@ -35,9 +35,8 @@ jobs:
       - name: Install pub Dependencies
         run: flutter pub get
 
-      - name: Build Android App
-        run: flutter build apk
-        continue-on-error: true
+      - name: Flutter doctore
+        run: flutter doctor -v
         
       - name: Build iOS App
         continue-on-error: true
