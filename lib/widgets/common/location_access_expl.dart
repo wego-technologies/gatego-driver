@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gatego_driver/providers/providers.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class LocationAccessCard extends HookConsumerWidget {

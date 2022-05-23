@@ -22,7 +22,7 @@ class AccountProvider extends StateNotifier<Account?> {
       retryTimer.cancel();
     }*/
     if (token != null && state == null) {
-      final url = DebugUtils().baseUrl + "api/account/me";
+      final url = "${DebugUtils().baseUrl}api/account/me";
 
       try {
         final res = await http.get(
@@ -30,17 +30,17 @@ class AccountProvider extends StateNotifier<Account?> {
           headers: {
             "Accept": "application/json",
             "content-type": "application/json",
-            "Authorization": "Bearer " + token,
+            "Authorization": "Bearer $token",
           },
         );
 
         if (res.statusCode == 200) {
           final resData = json.decode(res.body);
 
-          DateTime? _deletedAt;
+          DateTime? deletedAt;
 
           if (resData["deleted_at"] != null) {
-            _deletedAt = DateTime.tryParse(resData["deleted_at"]);
+            deletedAt = DateTime.tryParse(resData["deleted_at"]);
           }
 
           state = Account(
@@ -50,7 +50,7 @@ class AccountProvider extends StateNotifier<Account?> {
             name: resData["name"],
             id: resData["id"],
             carrier: genCarrier(resData),
-            deletedAt: _deletedAt,
+            deletedAt: deletedAt,
             driver: genDriver(resData),
             email: resData["email"],
             organization: Organization.fromMap(resData["organization"]),

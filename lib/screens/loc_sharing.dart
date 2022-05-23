@@ -115,9 +115,10 @@ class _LocSharingPageState extends ConsumerState<LocSharingPage> {
         }
       });
 
-      hereMapController.camera.lookAtPointWithDistance(
-          GeoCoordinates(52.530932, 13.384915), 55005000);
-      hereMapController.setWatermarkPosition(
+      hereMapController.camera.lookAtPointWithMeasure(
+          GeoCoordinates(52.530932, 13.384915),
+          MapMeasure(MapMeasureKind.distance, 55005000));
+      hereMapController.setWatermarkPlacement(
           WatermarkPlacement.bottomCenter, 13);
 
       ref.read(locationProvider).mapController = hereMapController;

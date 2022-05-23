@@ -46,9 +46,16 @@ dependencies:
   here_sdk:
     path: plugins/here_sdk
   wakelock: ^0.6.1+2
-  background_location: ^0.8.1
+  background_location: 
+    git:
+      url: https://github.com/hilalbaig/background_location.git
+      ref: master
   pinput: ^2.1.4
-  intl_phone_number_input: ^0.7.0+2
+  intl_phone_number_input:
+    git: 
+      url: https://github.com/Sipioteo/intl_phone_number_input
+      ref: patch-1
+  flutter_hooks: ^0.18.4
 
 dev_dependencies:
   flutter_test:

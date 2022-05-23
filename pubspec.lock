@@ -25,9 +25,11 @@ packages:
   background_location:
     dependency: "direct main"
     description:
-      name: background_location
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: master
+      resolved-ref: ec4a769277ef4027ae515262f555a8cea50ff611
+      url: "https://github.com/hilalbaig/background_location.git"
+    source: git
     version: "0.8.1"
   beamer:
     dependency: "direct main"
@@ -119,7 +121,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_hooks:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_hooks
       url: "https://pub.dartlang.org"
@@ -208,9 +210,11 @@ packages:
   intl_phone_number_input:
     dependency: "direct main"
     description:
-      name: intl_phone_number_input
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: patch-1
+      resolved-ref: acee0a6d70039f9565ce1647d690c144e0d2eb07
+      url: "https://github.com/Sipioteo/intl_phone_number_input"
+    source: git
     version: "0.7.0+2"
   js:
     dependency: transitive

@@ -288,7 +288,7 @@ class LocationProvider extends StateNotifier<LocationState> {
         if (state.shouldFly) {
           if (previousCoordinate == null) {
             state.mapController?.camera
-                .lookAtPointWithDistance(nextCoordinate, 1500);
+                .lookAtPointWithMeasure(nextCoordinate, here_map.MapMeasure(here_map.MapMeasureKind.distance, 1500));
           } else {
             state.mapController?.camera
                 .flyToWithOptionsAndGeoOrientationAndDistance(

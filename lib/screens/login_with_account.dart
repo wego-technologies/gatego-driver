@@ -1,10 +1,7 @@
-import 'dart:math';
-
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:gatego_driver/widgets/login/header.dart';
 import '../providers/providers.dart';
-import '../widgets/common/logo.dart';
 import '../widgets/common/text_input.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';

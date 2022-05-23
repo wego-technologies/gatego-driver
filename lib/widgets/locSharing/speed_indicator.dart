@@ -21,7 +21,7 @@ class _SpeedIndicatorState extends ConsumerState<SpeedIndicator> {
     SharedPreferences.getInstance().then((value) {
       prefs = value;
       isMetric = prefs?.getBool("isMetric") ?? true;
-      WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         if (mounted) setState(() {});
       });
     });

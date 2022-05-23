@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-
 import 'providers.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -129,7 +127,7 @@ class Auth extends StateNotifier<AuthState> {
   }
 
   Future<void> _authPin(phone, pin) async {
-    final url = DebugUtils().baseUrl + "auth/login";
+    final url = "${DebugUtils().baseUrl}auth/login";
 
     try {
       final res = await http.post(
@@ -190,7 +188,7 @@ class Auth extends StateNotifier<AuthState> {
   }
 
   Future<void> _auth(username, passw) async {
-    final url = DebugUtils().baseUrl + "auth/login";
+    final url = "${DebugUtils().baseUrl}auth/login";
 
     try {
       final res = await http.post(
@@ -242,7 +240,6 @@ class Auth extends StateNotifier<AuthState> {
           throw "No token recieved";
         }
       } else {
-        final resData = json.decode(res.body);
         throw ("Incorrect email or password.");
       }
     } catch (err) {
@@ -251,7 +248,7 @@ class Auth extends StateNotifier<AuthState> {
   }
 
   Future<void> _refreshToken() async {
-    final url = DebugUtils().baseUrl + "auth/refresh-token";
+    final url = "${DebugUtils().baseUrl}auth/refresh-token";
 
     if (token == null) {
       throw "Should be authenticated";
@@ -263,7 +260,7 @@ class Auth extends StateNotifier<AuthState> {
         headers: {
           "Accept": "application/json",
           "content-type": "application/json",
-          "Authorization": "Bearer " + state.token!
+          "Authorization": "Bearer ${state.token!}"
         },
         body: json.encode(
           {"jwt_token": state.token},
@@ -366,11 +363,10 @@ class Auth extends StateNotifier<AuthState> {
       state.authTimer!.cancel();
     }
 
-    final _timeToExpiry =
-        state.expiryDate!.difference(DateTime.now()).inSeconds;
+    final timeToExpiry = state.expiryDate!.difference(DateTime.now()).inSeconds;
 
     state = state.copyWith(
-      authTimer: Timer(Duration(seconds: _timeToExpiry), logout),
+      authTimer: Timer(Duration(seconds: timeToExpiry), logout),
     );
   }
 
@@ -378,10 +374,9 @@ class Auth extends StateNotifier<AuthState> {
     if (state.refreshTimer != null) {
       state.refreshTimer!.cancel();
     }
-    final _timeToExpiry =
-        state.expiryDate!.difference(DateTime.now()).inSeconds;
+    final timeToExpiry = state.expiryDate!.difference(DateTime.now()).inSeconds;
     state = state.copyWith(
-      refreshTimer: Timer(Duration(seconds: _timeToExpiry - 30), _tryReferesh),
+      refreshTimer: Timer(Duration(seconds: timeToExpiry - 30), _tryReferesh),
     );
   }
 
